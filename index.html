@@ -1,3656 +1,1915 @@
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Control de Gastos, Ingresos y Ahorros</title>
-
-    <style>
-
-        body {
-
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-            line-height: 1.6;
-
-            margin: 0;
-
-            padding: 20px;
-
-            background-color: #f5f5f5;
-
-            color: #333;
-
-        }
-
-        .container {
-
-            max-width: 1000px;
-
-            margin: 0 auto;
-
-            background: white;
-
-            padding: 20px;
-
-            border-radius: 8px;
-
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-
-        }
-
-        h1, h2, h3 {
-
-            color: #2c3e50;
-
-        }
-
-        .month-selector {
-
-            background: #3498db;
-
-            color: white;
-
-            padding: 10px;
-
-            border-radius: 5px;
-
-            margin-bottom: 20px;
-
-        }
-
-        .form-group {
-
-            margin-bottom: 15px;
-
-        }
-
-        label {
-
-            display: block;
-
-            margin-bottom: 5px;
-
-            font-weight: bold;
-
-        }
-
-        input, select {
-
-            width: 100%;
-
-            padding: 8px;
-
-            border: 1px solid #ddd;
-
-            border-radius: 4px;
-
-            box-sizing: border-box;
-
-        }
-
-        button {
-
-            background: #2ecc71;
-
-            color: white;
-
-            border: none;
-
-            padding: 10px 15px;
-
-            border-radius: 4px;
-
-            cursor: pointer;
-
-            font-size: 16px;
-
-            margin-right: 5px;
-
-            margin-bottom: 5px;
-
-        }
-
-        button:hover {
-
-            background: #27ae60;
-
-        }
-
-        .btn-secondary {
-
-            background: #95a5a6;
-
-        }
-
-        .btn-secondary:hover {
-
-            background: #7f8c8d;
-
-        }
-
-        .btn-warning {
-
-            background: #f39c12;
-
-        }
-
-        .btn-warning:hover {
-
-            background: #d35400;
-
-        }
-
-        .btn-danger {
-
-            background: #e74c3c;
-
-        }
-
-        .btn-danger:hover {
-
-            background: #c0392b;
-
-        }
-
-        .btn-info {
-
-            background: #3498db;
-
-        }
-
-        .btn-info:hover {
-
-            background: #2980b9;
-
-        }
-
-        .btn-savings {
-
-            background: #9b59b6;
-
-        }
-
-        .btn-savings:hover {
-
-            background: #8e44ad;
-
-        }
-
-        table {
-
-            width: 100%;
-
-            border-collapse: collapse;
-
-            margin-top: 20px;
-
-        }
-
-        th, td {
-
-            border: 1px solid #ddd;
-
-            padding: 8px;
-
-            text-align: left;
-
-        }
-
-        th {
-
-            background-color: #3498db;
-
-            color: white;
-
-        }
-
-        tr:nth-child(even) {
-
-            background-color: #f2f2f2;
-
-        }
-
-        .total {
-
-            font-weight: bold;
-
-            font-size: 1.2em;
-
-            margin-top: 20px;
-
-            padding: 10px;
-
-            border-radius: 4px;
-
-        }
-
-        .total-expenses {
-
-            background: #f1c40f;
-
-        }
-
-        .total-income {
-
-            background: #2ecc71;
-
-        }
-
-        .total-balance {
-
-            background: #9b59b6;
-
-            color: white;
-
-        }
-
-        .total-savings {
-
-            background: #1abc9c;
-
-            color: white;
-
-        }
-
-        .tabs {
-
-            display: flex;
-
-            margin-bottom: 20px;
-
-            flex-wrap: wrap;
-
-        }
-
-        .tab {
-
-            padding: 10px 20px;
-
-            background: #ecf0f1;
-
-            margin-right: 5px;
-
-            border-radius: 5px 5px 0 0;
-
-            cursor: pointer;
-
-            margin-bottom: 5px;
-
-        }
-
-        .tab.active {
-
-            background: #3498db;
-
-            color: white;
-
-        }
-
-        .tab-content {
-
-            display: none;
-
-        }
-
-        .tab-content.active {
-
-            display: block;
-
-        }
-
-        .category-color {
-
-            display: inline-block;
-
-            width: 15px;
-
-            height: 15px;
-
-            border-radius: 50%;
-
-            margin-right: 5px;
-
-        }
-
-        .backup-section {
-
-            margin-top: 30px;
-
-            padding: 15px;
-
-            background: #ecf0f1;
-
-            border-radius: 5px;
-
-        }
-
-        .hidden {
-
-            display: none;
-
-        }
-
-        .budget-progress {
-
-            margin-top: 5px;
-
-            height: 20px;
-
-            background: #ecf0f1;
-
-            border-radius: 4px;
-
-            overflow: hidden;
-
-        }
-
-        .budget-progress-bar {
-
-            height: 100%;
-
-            background: #2ecc71;
-
-            transition: width 0.3s;
-
-        }
-
-        .budget-over-80 {
-
-            background: #f39c12;
-
-        }
-
-        .budget-over-100 {
-
-            background: #e74c3c;
-
-        }
-
-        .budget-info {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            margin-top: 3px;
-
-            font-size: 0.8em;
-
-        }
-
-        .notification {
-
-            position: fixed;
-
-            top: 20px;
-
-            right: 20px;
-
-            padding: 15px;
-
-            background: #e74c3c;
-
-            color: white;
-
-            border-radius: 5px;
-
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-
-            z-index: 1000;
-
-            animation: slideIn 0.5s forwards;
-
-        }
-
-        @keyframes slideIn {
-
-            from { transform: translateX(100%); }
-
-            to { transform: translateX(0); }
-
-        }
-
-        .notification.warning {
-
-            background: #f39c12;
-
-        }
-
-        .notification.success {
-
-            background: #2ecc71;
-
-        }
-
-        .recurrent-actions {
-
-            display: flex;
-
-            gap: 5px;
-
-        }
-
-        .edit-mode {
-
-            background-color: #f39c12 !important;
-
-        }
-
-        .savings-jar {
-
-            border: 2px solid #9b59b6;
-
-            border-radius: 8px;
-
-            padding: 15px;
-
-            margin-bottom: 20px;
-
-            background-color: #f8f9fa;
-
-        }
-
-        .savings-jar h3 {
-
-            margin-top: 0;
-
-            color: #9b59b6;
-
-        }
-
-        .savings-progress {
-
-            height: 20px;
-
-            background: #ecf0f1;
-
-            border-radius: 4px;
-
-            margin-bottom: 10px;
-
-            overflow: hidden;
-
-        }
-
-        .savings-progress-bar {
-
-            height: 100%;
-
-            background: #1abc9c;
-
-            transition: width 0.3s;
-
-        }
-
-        .savings-actions {
-
-            display: flex;
-
-            gap: 5px;
-
-            margin-top: 10px;
-
-        }
-
-        .savings-form {
-
-            background: #ecf0f1;
-
-            padding: 15px;
-
-            border-radius: 5px;
-
-            margin-bottom: 20px;
-
-        }
-
-    </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Gastos, Ingresos y Ahorros</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .month-selector {
+            background: #3498db;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        button:hover {
+            background: #27ae60;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .btn-warning {
+            background: #f39c12;
+        }
+        .btn-warning:hover {
+            background: #d35400;
+        }
+        .btn-danger {
+            background: #e74c3c;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .btn-info {
+            background: #3498db;
+        }
+        .btn-info:hover {
+            background: #2980b9;
+        }
+        .btn-savings {
+            background: #9b59b6;
+        }
+        .btn-savings:hover {
+            background: #8e44ad;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .total-expenses {
+            background: #f1c40f;
+        }
+        .total-income {
+            background: #2ecc71;
+        }
+        .total-balance {
+            background: #9b59b6;
+            color: white;
+        }
+        .total-savings {
+            background: #1abc9c;
+            color: white;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #ecf0f1;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .category-color {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .backup-section {
+            margin-top: 30px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        .budget-progress {
+            margin-top: 5px;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .budget-progress-bar {
+            height: 100%;
+            background: #2ecc71;
+            transition: width 0.3s;
+        }
+        .budget-over-80 {
+            background: #f39c12;
+        }
+        .budget-over-100 {
+            background: #e74c3c;
+        }
+        .budget-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3px;
+            font-size: 0.8em;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.5s forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        .notification.warning {
+            background: #f39c12;
+        }
+        .notification.success {
+            background: #2ecc71;
+        }
+        .recurrent-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .edit-mode {
+            background-color: #f39c12 !important;
+        }
+        .savings-jar {
+            border: 2px solid #9b59b6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+        .savings-jar h3 {
+            margin-top: 0;
+            color: #9b59b6;
+        }
+        .savings-progress {
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .savings-progress-bar {
+            height: 100%;
+            background: #1abc9c;
+            transition: width 0.3s;
+        }
+        .savings-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .savings-form {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
-
 <body>
-
-    <div class="container">
-
-        <h1>Control de Gastos, Ingresos y Ahorros</h1>
-
-        
-
-        <div class="month-selector">
-
-            <div class="form-group">
-
-                <label for="month-year">Selecciona el mes y año:</label>
-
-                <input type="month" id="month-year" name="month-year">
-
-                <button id="new-month-btn" class="btn-secondary">Nuevo Mes</button>
-
-                <button id="copy-prev-month" class="btn-info" title="Copiar gastos recurrentes del mes anterior">Copiar Gastos Recurrentes</button>
-
-            </div>
-
-        </div>
-
-        
-
-        <div class="tabs">
-
-            <div class="tab active" data-tab="transactions">Transacciones</div>
-
-            <div class="tab" data-tab="categories">Categorías</div>
-
-            <div class="tab" data-tab="savings">Ahorros</div>
-
-            <div class="tab" data-tab="reports">Reportes</div>
-
-            <div class="tab" data-tab="recurrent">Recurrentes</div>
-
-            <div class="tab" data-tab="backup">Respaldo</div>
-
-        </div>
-
-        
-
-        <div class="tab-content active" id="transactions-tab">
-
-            <div class="tabs" style="margin-bottom: 10px;">
-
-                <div class="tab active" data-subtab="expenses">Gastos</div>
-
-                <div class="tab" data-subtab="income">Ingresos</div>
-
-            </div>
-
-            
-
-            <div class="subtab-content active" id="expenses-subtab">
-
-                <h2>Registrar Nuevo Gasto</h2>
-
-                <form id="expense-form">
-
-                    <div class="form-group">
-
-                        <label for="expense-date">Fecha:</label>
-
-                        <input type="date" id="expense-date" name="expense-date" required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="expense-category">Categoría:</label>
-
-                        <select id="expense-category" name="expense-category" required>
-
-                            <!-- Las categorías se llenarán con JavaScript -->
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="expense-description">Descripción:</label>
-
-                        <input type="text" id="expense-description" name="expense-description" required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="expense-amount">Monto:</label>
-
-                        <input type="number" id="expense-amount" name="expense-amount" step="0.01" min="0" required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label>
-
-                            <input type="checkbox" id="expense-recurrent"> ¿Gasto recurrente?
-
-                        </label>
-
-                    </div>
-
-                    <button type="submit" id="expense-submit-btn">Agregar Gasto</button>
-
-                </form>
-
-                
-
-                <h2>Gastos del Mes</h2>
-
-                <table id="expenses-table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Fecha</th>
-
-                            <th>Categoría</th>
-
-                            <th>Descripción</th>
-
-                            <th>Monto</th>
-
-                            <th>Recurrente</th>
-
-                            <th>Acciones</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <!-- Los gastos se llenarán con JavaScript -->
-
-                    </tbody>
-
-                </table>
-
-                <div class="total total-expenses" id="total-expenses">
-
-                    Total gastado este mes: $0.00
-
-                </div>
-
-            </div>
-
-            
-
-            <div class="subtab-content" id="income-subtab">
-
-                <h2>Registrar Nuevo Ingreso</h2>
-
-                <form id="income-form">
-
-                    <div class="form-group">
-
-                        <label for="income-date">Fecha:</label>
-
-                        <input type="date" id="income-date" name="income-date" required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="income-source">Fuente:</label>
-
-                        <select id="income-source" name="income-source" required>
-
-                            <option value="" disabled selected>-- Selecciona una fuente --</option>
-
-                            <option value="Salario">Salario</option>
-
-                            <option value="Freelance">Freelance</option>
-
-                            <option value="Inversiones">Inversiones</option>
-
-                            <option value="Transferencia">Transferencia</option>
-
-                            <option value="Otro">Otro</option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="income-description">Descripción:</label>
-
-                        <input type="text" id="income-description" name="income-description">
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="income-amount">Monto:</label>
-
-                        <input type="number" id="income-amount" name="income-amount" step="0.01" min="0" required>
-
-                    </div>
-
-                    <button type="submit">Agregar Ingreso</button>
-
-                </form>
-
-                
-
-                <h2>Ingresos del Mes</h2>
-
-                <table id="income-table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Fecha</th>
-
-                            <th>Fuente</th>
-
-                            <th>Descripción</th>
-
-                            <th>Monto</th>
-
-                            <th>Acciones</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <!-- Los ingresos se llenarán con JavaScript -->
-
-                    </tbody>
-
-                </table>
-
-                <div class="total total-income" id="total-income">
-
-                    Total ingresos este mes: $0.00
-
-                </div>
-
-            </div>
-
-            
-
-            <div class="total total-balance" id="total-balance">
-
-                Balance mensual: $0.00
-
-            </div>
-
-            <div class="total total-savings" id="total-savings">
-
-                Total ahorrado este mes: $0.00
-
-            </div>
-
-        </div>
-
-        
-
-        <div class="tab-content" id="categories-tab">
-
-            <h2>Administrar Categorías</h2>
-
-            <form id="category-form">
-
-                <div class="form-group">
-
-                    <label for="category-name">Nombre de la categoría:</label>
-
-                    <input type="text" id="category-name" name="category-name" required>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="category-color">Color:</label>
-
-                    <input type="color" id="category-color" name="category-color" value="#3498db">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="category-budget">Presupuesto mensual (opcional):</label>
-
-                    <input type="number" id="category-budget" name="category-budget" step="0.01" min="0">
-
-                    <small>Deja en blanco si no quieres establecer un presupuesto</small>
-
-                </div>
-
-                <button type="submit">Agregar Categoría</button>
-
-            </form>
-
-            
-
-            <h2>Tus Categorías</h2>
-
-            <table id="categories-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Nombre</th>
-
-                        <th>Color</th>
-
-                        <th>Presupuesto</th>
-
-                        <th>Progreso</th>
-
-                        <th>Acciones</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <!-- Las categorías se llenarán con JavaScript -->
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-        
-
-        <div class="tab-content" id="savings-tab">
-
-            <h2>Mis Ahorros</h2>
-
-            
-
-            <div class="savings-form">
-
-                <h3>Crear Nueva Alcancía</h3>
-
-                <form id="savings-jar-form">
-
-                    <div class="form-group">
-
-                        <label for="jar-name">Nombre de la alcancía:</label>
-
-                        <input type="text" id="jar-name" name="jar-name" required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="jar-target">Meta de ahorro (opcional):</label>
-
-                        <input type="number" id="jar-target" name="jar-target" step="0.01" min="0">
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="jar-description">Descripción:</label>
-
-                        <input type="text" id="jar-description" name="jar-description">
-
-                    </div>
-
-                    <button type="submit" class="btn-savings">Crear Alcancía</button>
-
-                </form>
-
-            </div>
-
-            
-
-            <div class="savings-form">
-
-                <h3>Agregar Ahorro Mensual</h3>
-
-                <form id="savings-form">
-
-                    <div class="form-group">
-
-                        <label for="savings-date">Fecha:</label>
-
-                        <input type="date" id="savings-date" name="savings-date" required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="savings-jar">Alcancía:</label>
-
-                        <select id="savings-jar" name="savings-jar" required>
-
-                            <!-- Las alcancías se llenarán con JavaScript -->
-
-                        </select>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="savings-amount">Monto a ahorrar:</label>
-
-                        <input type="number" id="savings-amount" name="savings-amount" step="0.01" min="0" required>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="savings-description">Descripción:</label>
-
-                        <input type="text" id="savings-description" name="savings-description">
-
-                    </div>
-
-                    <button type="submit" class="btn-savings">Agregar Ahorro</button>
-
-                </form>
-
-            </div>
-
-            
-
-            <h2>Tus Alcancías</h2>
-
-            <div id="savings-jars-container">
-
-                <!-- Las alcancías se llenarán con JavaScript -->
-
-            </div>
-
-            
-
-            <div class="total total-savings" id="total-all-savings">
-
-                Total ahorrado: $0.00
-
-            </div>
-
-        </div>
-
-        
-
-        <div class="tab-content" id="reports-tab">
-
-            <h2>Reportes Mensuales</h2>
-
-            <div class="form-group">
-
-                <label for="report-month">Selecciona mes para reporte:</label>
-
-                <input type="month" id="report-month" name="report-month">
-
-                <button id="generate-report">Generar Reporte</button>
-
-            </div>
-
-            
-
-            <div id="report-results">
-
-                <canvas id="expenses-chart" width="400" height="200"></canvas>
-
-                <canvas id="income-vs-expenses-chart" width="400" height="200" style="margin-top: 20px;"></canvas>
-
-                <canvas id="savings-chart" width="400" height="200" style="margin-top: 20px;"></canvas>
-
-                <div id="monthly-comparison"></div>
-
-            </div>
-
-        </div>
-
-        
-
-        <div class="tab-content" id="recurrent-tab">
-
-            <h2>Gastos Recurrentes</h2>
-
-            <p>Estos gastos se pueden copiar al mes siguiente automáticamente.</p>
-
-            
-
-            <table id="recurrent-expenses-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Categoría</th>
-
-                        <th>Descripción</th>
-
-                        <th>Monto</th>
-
-                        <th>Acciones</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <!-- Los gastos recurrentes se llenarán con JavaScript -->
-
-                </tbody>
-
-            </table>
-
-            
-
-            <div class="form-group" style="margin-top: 20px;">
-
-                <button id="add-to-next-month" class="btn-info">Agregar todos al próximo mes</button>
-
-                <small>Se crearán como gastos normales que podrás editar</small>
-
-            </div>
-
-        </div>
-
-        
-
-        <div class="tab-content" id="backup-tab">
-
-            <h2>Respaldo de Datos</h2>
-
-            
-
-            <div class="backup-section">
-
-                <h3>Exportar Datos</h3>
-
-                <p>Guarda una copia de seguridad de todos tus datos en un archivo JSON.</p>
-
-                <button id="export-btn" class="btn-warning">Exportar Backup</button>
-
-                <p id="export-success" class="hidden" style="color: green; margin-top: 10px;">¡Backup exportado correctamente!</p>
-
-            </div>
-
-            
-
-            <div class="backup-section">
-
-                <h3>Importar Datos</h3>
-
-                <p>Restaura tus datos desde un archivo JSON previamente exportado.</p>
-
-                <input type="file" id="import-file" accept=".json" class="hidden">
-
-                <button id="import-btn" class="btn-warning">Seleccionar Archivo para Importar</button>
-
-                <p id="import-status" class="hidden" style="margin-top: 10px;"></p>
-
-            </div>
-
-            
-
-            <div class="backup-section">
-
-                <h3>Borrar Todos los Datos</h3>
-
-                <p>¡Precaución! Esta acción eliminará todos tus datos permanentemente.</p>
-
-                <button id="reset-btn" class="btn-danger">Borrar Todos los Datos</button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-
-        // Variables globales
-
-        let currentMonthYear = new Date().toISOString().slice(0, 7);
-
-        let expenses = JSON.parse(localStorage.getItem('expenses')) || {};
-
-        let income = JSON.parse(localStorage.getItem('income')) || {};
-
-        let savings = JSON.parse(localStorage.getItem('savings')) || {};
-
-        let savingsJars = JSON.parse(localStorage.getItem('savingsJars')) || [];
-
-        let recurrentExpenses = JSON.parse(localStorage.getItem('recurrentExpenses')) || [];
-
-        let categories = JSON.parse(localStorage.getItem('categories')) || [
-
-            { id: 1, name: 'Comida', color: '#e74c3c', budget: 3000 },
-
-            { id: 2, name: 'Transporte', color: '#3498db', budget: 1500 },
-
-            { id: 3, name: 'Entretenimiento', color: '#9b59b6', budget: 1000 },
-
-            { id: 4, name: 'Servicios', color: '#2ecc71', budget: 2500 }
-
-        ];
-
-        let nextCategoryId = categories.length > 0 ? Math.max(...categories.map(c => c.id)) + 1 : 1;
-
-        let nextJarId = savingsJars.length > 0 ? Math.max(...savingsJars.map(j => j.id)) + 1 : 1;
-
-        let expensesChart = null;
-
-        let incomeVsExpensesChart = null;
-
-        let savingsChart = null;
-
-        let notifications = [];
-
-        let currentEditingRecurrentIndex = null;
-
-        let isEditingRecurrent = false;
-
-
-        // Inicialización
-
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // Configurar fecha actual
-
-            document.getElementById('month-year').value = currentMonthYear;
-
-            document.getElementById('expense-date').valueAsDate = new Date();
-
-            document.getElementById('income-date').valueAsDate = new Date();
-
-            document.getElementById('savings-date').valueAsDate = new Date();
-
-            
-
-            // Cargar datos
-
-            loadCategories();
-
-            loadExpenses();
-
-            loadIncome();
-
-            loadSavings();
-
-            loadSavingsJars();
-
-            loadRecurrentExpenses();
-
-            updateTotals();
-
-            updateBudgetProgress();
-
-            
-
-            // Event listeners
-
-            document.getElementById('month-year').addEventListener('change', function() {
-
-                currentMonthYear = this.value;
-
-                loadExpenses();
-
-                loadIncome();
-
-                loadSavings();
-
-                updateTotals();
-
-                updateBudgetProgress();
-
-            });
-
-            
-
-            document.getElementById('new-month-btn').addEventListener('click', function() {
-
-                const now = new Date();
-
-                currentMonthYear = now.toISOString().slice(0, 7);
-
-                document.getElementById('month-year').value = currentMonthYear;
-
-                loadExpenses();
-
-                loadIncome();
-
-                loadSavings();
-
-                updateTotals();
-
-                updateBudgetProgress();
-
-            });
-
-            
-
-            document.getElementById('copy-prev-month').addEventListener('click', copyRecurrentExpensesToCurrentMonth);
-
-            
-
-            document.getElementById('expense-form').addEventListener('submit', function(e) {
-
-                e.preventDefault();
-
-                if (isEditingRecurrent) {
-
-                    updateRecurrentExpense();
-
-                } else {
-
-                    addExpense();
-
-                }
-
-            });
-
-            
-
-            document.getElementById('income-form').addEventListener('submit', function(e) {
-
-                e.preventDefault();
-
-                addIncome();
-
-            });
-
-            
-
-            document.getElementById('savings-form').addEventListener('submit', function(e) {
-
-                e.preventDefault();
-
-                addSavings();
-
-            });
-
-            
-
-            document.getElementById('savings-jar-form').addEventListener('submit', function(e) {
-
-                e.preventDefault();
-
-                addSavingsJar();
-
-            });
-
-            
-
-            document.getElementById('category-form').addEventListener('submit', function(e) {
-
-                e.preventDefault();
-
-                addCategory();
-
-            });
-
-            
-
-            document.getElementById('generate-report').addEventListener('click', function() {
-
-                generateReport();
-
-            });
-
-            
-
-            document.getElementById('add-to-next-month').addEventListener('click', addRecurrentToNextMonth);
-
-            
-
-            // Tabs principales
-
-            const tabs = document.querySelectorAll('.tab');
-
-            tabs.forEach(tab => {
-
-                tab.addEventListener('click', function() {
-
-                    // Remover active de todos los tabs
-
-                    tabs.forEach(t => t.classList.remove('active'));
-
-                    // Agregar active al tab clickeado
-
-                    this.classList.add('active');
-
-                    
-
-                    // Ocultar todos los contenidos
-
-                    document.querySelectorAll('.tab-content').forEach(content => {
-
-                        content.classList.remove('active');
-
-                    });
-
-                    
-
-                    // Mostrar el contenido correspondiente
-
-                    const tabId = this.getAttribute('data-tab');
-
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
-
-                });
-
-            });
-
-            
-
-            // Subtabs (transacciones)
-
-            const subtabs = document.querySelectorAll('[data-subtab]');
-
-            subtabs.forEach(tab => {
-
-                tab.addEventListener('click', function() {
-
-                    // Remover active de todos los subtabs
-
-                    subtabs.forEach(t => t.classList.remove('active'));
-
-                    // Agregar active al subtab clickeado
-
-                    this.classList.add('active');
-
-                    
-
-                    // Ocultar todos los subcontenidos
-
-                    document.querySelectorAll('.subtab-content').forEach(content => {
-
-                        content.classList.remove('active');
-
-                    });
-
-                    
-
-                    // Mostrar el subcontenido correspondiente
-
-                    const subtabId = this.getAttribute('data-subtab');
-
-                    document.getElementById(`${subtabId}-subtab`).classList.add('active');
-
-                });
-
-            });
-
-            
-
-            // Backup/restore
-
-            document.getElementById('export-btn').addEventListener('click', exportData);
-
-            document.getElementById('import-btn').addEventListener('click', function() {
-
-                document.getElementById('import-file').click();
-
-            });
-
-            document.getElementById('import-file').addEventListener('change', importData);
-
-            document.getElementById('reset-btn').addEventListener('click', resetData);
-
-        });
-
-
-        // Funciones principales
-
-        function loadCategories() {
-
-            const categorySelect = document.getElementById('expense-category');
-
-            const categoriesTable = document.getElementById('categories-table').querySelector('tbody');
-
-            
-
-            // Limpiar select
-
-            categorySelect.innerHTML = '';
-
-            
-
-            // Limpiar tabla
-
-            categoriesTable.innerHTML = '';
-
-            
-
-            // Agregar opción por defecto
-
-            const defaultOption = document.createElement('option');
-
-            defaultOption.value = '';
-
-            defaultOption.textContent = '-- Selecciona una categoría --';
-
-            defaultOption.disabled = true;
-
-            defaultOption.selected = true;
-
-            categorySelect.appendChild(defaultOption);
-
-            
-
-            // Llenar select y tabla
-
-            categories.forEach(category => {
-
-                // Opción para el select
-
-                const option = document.createElement('option');
-
-                option.value = category.id;
-
-                option.textContent = category.name;
-
-                categorySelect.appendChild(option);
-
-                
-
-                // Calcular gasto actual para esta categoría
-
-                const spent = calculateCategorySpending(category.id);
-
-                const budget = category.budget || 0;
-
-                const percentage = budget > 0 ? (spent / budget) * 100 : 0;
-
-                
-
-                // Fila para la tabla
-
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-
-                    <td>${category.name}</td>
-
-                    <td><span class="category-color" style="background-color: ${category.color};"></span>${category.color}</td>
-
-                    <td>${budget > 0 ? '$' + budget.toFixed(2) : 'Sin presupuesto'}</td>
-
-                    <td>
-
-                        ${budget > 0 ? `
-
-                        <div class="budget-progress">
-
-                            <div class="budget-progress-bar" 
-
-                                 style="width: ${Math.min(percentage, 100)}%; 
-
-                                        ${percentage > 100 ? 'background-color: #e74c3c' : percentage > 80 ? 'background-color: #f39c12' : ''}">
-
-                            </div>
-
-                        </div>
-
-                        <div class="budget-info">
-
-                            <span>$${spent.toFixed(2)} gastados</span>
-
-                            <span>${percentage.toFixed(0)}%</span>
-
-                        </div>
-
-                        ` : 'N/A'}
-
-                    </td>
-
-                    <td>
-
-                        <button class="btn-secondary delete-category" data-id="${category.id}">Eliminar</button>
-
-                    </td>
-
-                `;
-
-                categoriesTable.appendChild(row);
-
-            });
-
-            
-
-            // Event listeners para botones de eliminar
-
-            document.querySelectorAll('.delete-category').forEach(button => {
-
-                button.addEventListener('click', function() {
-
-                    const categoryId = parseInt(this.getAttribute('data-id'));
-
-                    deleteCategory(categoryId);
-
-                });
-
-            });
-
-        }
-
-        
-
-        function loadSavingsJars() {
-
-            const jarSelect = document.getElementById('savings-jar');
-
-            const jarsContainer = document.getElementById('savings-jars-container');
-
-            
-
-            // Limpiar select
-
-            jarSelect.innerHTML = '';
-
-            
-
-            // Limpiar contenedor
-
-            jarsContainer.innerHTML = '';
-
-            
-
-            // Agregar opción por defecto
-
-            const defaultOption = document.createElement('option');
-
-            defaultOption.value = '';
-
-            defaultOption.textContent = '-- Selecciona una alcancía --';
-
-            defaultOption.disabled = true;
-
-            defaultOption.selected = true;
-
-            jarSelect.appendChild(defaultOption);
-
-            
-
-            // Llenar select y contenedor
-
-            savingsJars.forEach(jar => {
-
-                // Opción para el select
-
-                const option = document.createElement('option');
-
-                option.value = jar.id;
-
-                option.textContent = jar.name;
-
-                jarSelect.appendChild(option);
-
-                
-
-                // Calcular ahorro total para esta alcancía
-
-                const saved = calculateJarSavings(jar.id);
-
-                const percentage = jar.target > 0 ? (saved / jar.target) * 100 : 0;
-
-                
-
-                // Crear elemento de alcancía
-
-                const jarElement = document.createElement('div');
-
-                jarElement.className = 'savings-jar';
-
-                jarElement.innerHTML = `
-
-                    <h3>${jar.name}</h3>
-
-                    ${jar.description ? `<p>${jar.description}</p>` : ''}
-
-                    <div class="savings-progress">
-
-                        <div class="savings-progress-bar" 
-
-                             style="width: ${Math.min(percentage, 100)}%">
-
-                        </div>
-
-                    </div>
-
-                    <div class="budget-info">
-
-                        <span>$${saved.toFixed(2)} ahorrados</span>
-
-                        ${jar.target > 0 ? `<span>${percentage.toFixed(0)}% de $${jar.target.toFixed(2)}</span>` : ''}
-
-                    </div>
-
-                    <div class="savings-actions">
-
-                        <button class="btn-secondary delete-jar" data-id="${jar.id}">Eliminar</button>
-
-                        <button class="btn-secondary edit-jar" data-id="${jar.id}">Editar</button>
-
-                        <button class="btn-savings withdraw-jar" data-id="${jar.id}">Retirar</button>
-
-                    </div>
-
-                `;
-
-                jarsContainer.appendChild(jarElemet);
-
-            });
-
-            
-
-            // Event listeners para botones de alcancías
-
-            document.querySelectorAll('.delete-jar').forEach(button => {
-
-                button.addEventListener('click', function() {
-
-                    const jarId = parseInt(this.getAttribute('data-id'));
-
-                    deleteSavingsJar(jarId);
-
-                });
-
-            });
-
-            
-
-            document.querySelectorAll('.edit-jar').forEach(button => {
-
-                button.addEventListener('click', function() {
-
-                    const jarId = parseInt(this.getAttribute('data-id'));
-
-                    editSavingsJar(jarId);
-
-                });
-
-            });
-
-            
-
-            document.querySelectorAll('.withdraw-jar').forEach(button => {
-
-                button.addEventListener('click', function() {
-
-                    const jarId = parseInt(this.getAttribute('data-id'));
-
-                    withdrawFromJar(jarId);
-
-                });
-
-            });
-
-        }
-
-        
-
-        function calculateJarSavings(jarId) {
-
-            if (!savings[currentMonthYear]) return 0;
-
-            
-
-            return savings[currentMonthYear]
-
-                .filter(saving => saving.jarId === jarId)
-
-                .reduce((sum, saving) => sum + saving.amount, 0);
-
-        }
-
-        
-
-        function loadSavings() {
-
-            if (!savings[currentMonthYear]) {
-
-                savings[currentMonthYear] = [];
-
-                saveSavings();
-
-            }
-
-            
-
-            updateSavingsTotal();
-
-        }
-
-        
-
-        function updateSavingsTotal() {
-
-            let monthlySavings = 0;
-
-            let totalSavings = 0;
-
-            
-
-            if (savings[currentMonthYear]) {
-
-                monthlySavings = savings[currentMonthYear].reduce((sum, saving) => sum + saving.amount, 0);
-
-            }
-
-            
-
-            // Calcular ahorro total en todas las alcancías
-
-            savingsJars.forEach(jar => {
-
-                totalSavings += calculateJarSavings(jar.id);
-
-            });
-
-            
-
-            document.getElementById('total-savings').textContent = `Total ahorrado este mes: $${monthlySavings.toFixed(2)}`;
-
-            document.getElementById('total-all-savings').textContent = `Total ahorrado: $${totalSavings.toFixed(2)}`;
-
-        }
-
-        
-
-        function calculateCategorySpending(categoryId) {
-
-            if (!expenses[currentMonthYear]) return 0;
-
-            
-
-            return expenses[currentMonthYear]
-
-                .filter(expense => expense.categoryId === categoryId)
-
-                .reduce((sum, expense) => sum + expense.amount, 0);
-
-        }
-
-        
-
-        function updateBudgetProgress() {
-
-            if (!expenses[currentMonthYear]) return;
-
-            
-
-            // Verificar si alguna categoría supera el 80% o 100% del presupuesto
-
-            categories.forEach(category => {
-
-                if (category.budget) {
-
-                    const spent = calculateCategorySpending(category.id);
-
-                    const percentage = (spent / category.budget) * 100;
-
-                    
-
-                    if (percentage > 100) {
-
-                        showNotification(`¡Atención! Has superado el presupuesto de ${category.name} (${percentage.toFixed(0)}%)`, 'danger');
-
-                    } else if (percentage > 80) {
-
-                        showNotification(`¡Cuidado! Estás cerca del límite en ${category.name} (${percentage.toFixed(0)}%)`, 'warning');
-
-                    }
-
-                }
-
-            });
-
-        }
-
-        
-
-        function showNotification(message, type = 'danger') {
-
-            // Evitar notificaciones duplicadas
-
-            if (notifications.includes(message)) return;
-
-            notifications.push(message);
-
-            
-
-            const notification = document.createElement('div');
-
-            notification.className = `notification ${type}`;
-
-            notification.textContent = message;
-
-            document.body.appendChild(notification);
-
-            
-
-            setTimeout(() => {
-
-                notification.remove();
-
-                notifications = notifications.filter(msg => msg !== message);
-
-            }, 5000);
-
-        }
-
-        
-
-        function loadExpenses() {
-
-            const expensesTable = document.getElementById('expenses-table').querySelector('tbody');
-
-            expensesTable.innerHTML = '';
-
-            
-
-            if (!expenses[currentMonthYear]) {
-
-                expenses[currentMonthYear] = [];
-
-                saveExpenses();
-
-                return;
-
-            }
-
-            
-
-            expenses[currentMonthYear].forEach((expense, index) => {
-
-                const category = categories.find(c => c.id === expense.categoryId);
-
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-
-                    <td>${expense.date}</td>
-
-                    <td><span class="category-color" style="background
-
-
-           </tr>
-
-        `;
-
-        expensesTable.appendChild(row);
-
-    });
-
-
-    // Event listeners para botones
-
-    document.querySelectorAll('.delete-expense').forEach(button => {
-
-        button.addEventListener('click', function() {
-
-            const expenseIndex = parseInt(this.getAttribute('data-index'));
-
-            deleteExpense(expenseIndex);
-
-        });
-
-    });
-
-
-    document.querySelectorAll('.edit-expense').forEach(button => {
-
-        button.addEventListener('click', function() {
-
-            const expenseIndex = parseInt(this.getAttribute('data-index'));
-
-            editExpense(expenseIndex);
-
-        });
-
-    });
-
-}
-
-
-function loadIncome() {
-
-    const incomeTable = document.getElementById('income-table').querySelector('tbody');
-
-    incomeTable.innerHTML = '';
-
-
-    if (!income[currentMonthYear]) {
-
-        income[currentMonthYear] = [];
-
-        saveIncome();
-
-        return;
-
-    }
-
-
-    income[currentMonthYear].forEach((incomeItem, index) => {
-
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-
-            <td>${incomeItem.date}</td>
-
-            <td>${incomeItem.source}</td>
-
-            <td>${incomeItem.description || '-'}</td>
-
-            <td>$${incomeItem.amount.toFixed(2)}</td>
-
-            <td>
-
-                <button class="btn-secondary delete-income" data-index="${index}">Eliminar</button>
-
-                <button class="btn-secondary edit-income" data-index="${index}">Editar</button>
-
-            </td>
-
-        `;
-
-        incomeTable.appendChild(row);
-
-    });
-
-
-    // Event listeners para botones
-
-    document.querySelectorAll('.delete-income').forEach(button => {
-
-        button.addEventListener('click', function() {
-
-            const incomeIndex = parseInt(this.getAttribute('data-index'));
-
-            deleteIncome(incomeIndex);
-
-        });
-
-    });
-
-
-    document.querySelectorAll('.edit-income').forEach(button => {
-
-        button.addEventListener('click', function() {
-
-            const incomeIndex = parseInt(this.getAttribute('data-index'));
-
-            editIncome(incomeIndex);
-
-        });
-
-    });
-
-}
-
-
-function loadRecurrentExpenses() {
-
-    const recurrentTable = document.getElementById('recurrent-expenses-table').querySelector('tbody');
-
-    recurrentTable.innerHTML = '';
-
-
-    recurrentExpenses.forEach((expense, index) => {
-
-        const category = categories.find(c => c.id === expense.categoryId);
-
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-
-            <td><span class="category-color" style="background-color: ${category ? category.color : '#ccc'};"></span>${category ? category.name : 'Categoría eliminada'}</td>
-
-            <td>${expense.description}</td>
-
-            <td>$${expense.amount.toFixed(2)}</td>
-
-            <td class="recurrent-actions">
-
-                <button class="btn-secondary delete-recurrent" data-index="${index}">Eliminar</button>
-
-                <button class="btn-secondary edit-recurrent" data-index="${index}">Editar</button>
-
-                <button class="btn-info add-recurrent-to-month" data-index="${index}">Agregar este mes</button>
-
-            </td>
-
-        `;
-
-        recurrentTable.appendChild(row);
-
-    });
-
-
-    // Event listeners para botones
-
-    document.querySelectorAll('.delete-recurrent').forEach(button => {
-
-        button.addEventListener('click', function() {
-
-            const index = parseInt(this.getAttribute('data-index'));
-
-            deleteRecurrentExpense(index);
-
-        });
-
-    });
-
-
-    document.querySelectorAll('.edit-recurrent').forEach(button => {
-
-        button.addEventListener('click', function() {
-
-            const index = parseInt(this.getAttribute('data-index'));
-
-            editRecurrentExpense(index);
-
-        });
-
-    });
-
-
-    document.querySelectorAll('.add-recurrent-to-month').forEach(button => {
-
-        button.addEventListener('click', function() {
-
-            const index = parseInt(this.getAttribute('data-index'));
-
-            addSingleRecurrentToCurrentMonth(index);
-
-        });
-
-    });
-
-}
-
-
-function addExpense() {
-
-    const date = document.getElementById('expense-date').value;
-
-    const categoryId = parseInt(document.getElementById('expense-category').value);
-
-    const description = document.getElementById('expense-description').value;
-
-    const amount = parseFloat(document.getElementById('expense-amount').value);
-
-    const isRecurrent = document.getElementById('expense-recurrent').checked;
-
-
-    if (!expenses[currentMonthYear]) {
-
-        expenses[currentMonthYear] = [];
-
-    }
-
-
-    const newExpense = {
-
-        date,
-
-        categoryId,
-
-        description,
-
-        amount,
-
-        recurrent: isRecurrent
-
-    };
-
-
-    expenses[currentMonthYear].push(newExpense);
-
-
-    // Si es recurrente, agregar a la lista de recurrentes (si no existe)
-
-    if (isRecurrent) {
-
-        const exists = recurrentExpenses.some(exp => 
-
-            exp.categoryId === categoryId && 
-
-            exp.description === description && 
-
-            exp.amount === amount
-
-        );
-
-
-        if (!exists) {
-
-            recurrentExpenses.push({
-
-                categoryId,
-
-                description,
-
-                amount
-
-            });
-
-            saveRecurrentExpenses();
-
-        }
-
-    }
-
-
-    saveExpenses();
-
-    loadExpenses();
-
-    loadRecurrentExpenses();
-
-    updateTotals();
-
-    updateBudgetProgress();
-
-
-    // Limpiar formulario
-
-    document.getElementById('expense-form').reset();
-
-    document.getElementById('expense-date').valueAsDate = new Date();
-
-    document.getElementById('expense-recurrent').checked = false;
-
-}
-
-
-function addIncome() {
-
-    const date = document.getElementById('income-date').value;
-
-    const source = document.getElementById('income-source').value;
-
-    const description = document.getElementById('income-description').value;
-
-    const amount = parseFloat(document.getElementById('income-amount').value);
-
-
-    if (!income[currentMonthYear]) {
-
-        income[currentMonthYear] = [];
-
-    }
-
-
-    income[currentMonthYear].push({
-
-        date,
-
-        source,
-
-        description,
-
-        amount
-
-    });
-
-
-    saveIncome();
-
-    loadIncome();
-
-    updateTotals();
-
-
-    // Limpiar formulario
-
-    document.getElementById('income-form').reset();
-
-    document.getElementById('income-date').valueAsDate = new Date();
-
-}
-
-
-function addSavings() {
-
-    const date = document.getElementById('savings-date').value;
-
-    const jarId = parseInt(document.getElementById('savings-jar').value);
-
-    const amount = parseFloat(document.getElementById('savings-amount').value);
-
-    const description = document.getElementById('savings-description').value;
-
-
-    if (!savings[currentMonthYear]) {
-
-        savings[currentMonthYear] = [];
-
-    }
-
-
-    savings[currentMonthYear].push({
-
-        date,
-
-        jarId,
-
-        amount,
-
-        description
-
-    });
-
-
-    saveSavings();
-
-    loadSavings();
-
-    updateTotals();
-
-    updateSavingsTotal();
-
-
-    // Limpiar formulario
-
-    document.getElementById('savings-form').reset();
-
-    document.getElementById('savings-date').valueAsDate = new Date();
-
-}
-
-
-function addSavingsJar() {
-
-    const name = document.getElementById('jar-name').value.trim();
-
-    const target = document.getElementById('jar-target').value ? parseFloat(document.getElementById('jar-target').value) : null;
-
-    const description = document.getElementById('jar-description').value;
-
-
-    if (!name) return;
-
-
-    const newJar = {
-
-        id: nextJarId++,
-
-        name,
-
-        target,
-
-        description
-
-    };
-
-
-    savingsJars.push(newJar);
-
-    saveSavingsJars();
-
-    loadSavingsJars();
-
-    updateSavingsTotal();
-
-
-    // Limpiar formulario
-
-    document.getElementById('savings-jar-form').reset();
-
-}
-
-
-function deleteExpense(index) {
-
-    if (confirm('¿Estás seguro de que quieres eliminar este gasto?')) {
-
-        expenses[currentMonthYear].splice(index, 1);
-
-        saveExpenses();
-
-        loadExpenses();
-
-        updateTotals();
-
-        updateBudgetProgress();
-
-    }
-
-}
-
-
-function editExpense(index) {
-
-    const expense = expenses[currentMonthYear][index];
-
-
-    // Llenar el formulario con los datos del gasto
-
-    document.getElementById('expense-date').value = expense.date;
-
-    document.getElementById('expense-category').value = expense.categoryId;
-
-    document.getElementById('expense-description').value = expense.description;
-
-    document.getElementById('expense-amount').value = expense.amount;
-
-    document.getElementById('expense-recurrent').checked = expense.recurrent;
-
-
-    // Cambiar el botón a modo edición
-
-    const submitButton = document.getElementById('expense-submit-btn');
-
-    submitButton.textContent = 'Actualizar Gasto';
-
-    submitButton.classList.add('edit-mode');
-
-
-    // Eliminar el gasto original al guardar
-
-    expenses[currentMonthYear].splice(index, 1);
-
-}
-
-
-function deleteIncome(index) {
-
-    if (confirm('¿Estás seguro de que quieres eliminar este ingreso?')) {
-
-        income[currentMonthYear].splice(index, 1);
-
-        saveIncome();
-
-        loadIncome();
-
-        updateTotals();
-
-    }
-
-}
-
-
-function editIncome(index) {
-
-    const incomeItem = income[currentMonthYear][index];
-
-
-    // Llenar el formulario con los datos del ingreso
-
-    document.getElementById('income-date').value = incomeItem.date;
-
-    document.getElementById('income-source').value = incomeItem.source;
-
-    document.getElementById('income-description').value = incomeItem.description || '';
-
-    document.getElementById('income-amount').value = incomeItem.amount;
-
-
-    // Eliminar el ingreso original
-
-    income[currentMonthYear].splice(index, 1);
-
-    saveIncome();
-
-    loadIncome();
-
-    updateTotals();
-
-}
-
-
-function deleteRecurrentExpense(index) {
-
-    if (confirm('¿Estás seguro de que quieres eliminar este gasto recurrente?')) {
-
-        recurrentExpenses.splice(index, 1);
-
-        saveRecurrentExpenses();
-
-        loadRecurrentExpenses();
-
-    }
-
-}
-
-
-function editRecurrentExpense(index) {
-
-    const expense = recurrentExpenses[index];
-
-
-    // Llenar el formulario con los datos del gasto recurrente
-
-    document.getElementById('expense-date').valueAsDate = new Date();
-
-    document.getElementById('expense-category').value = expense.categoryId;
-
-    document.getElementById('expense-description').value = expense.description;
-
-    document.getElementById('expense-amount').value = expense.amount;
-
-    document.getElementById('expense-recurrent').checked = true;
-
-
-    // Cambiar a la pestaña de gastos
-
-    document.querySelector('[data-subtab="expenses"]').click();
-
-
-    // Configurar el formulario para edición
-
-    const submitButton = document.getElementById('expense-submit-btn');
-
-    submitButton.textContent = 'Actualizar Recurrente';
-
-    submitButton.classList.add('edit-mode');
-
-
-    // Guardar el índice que estamos editando
-
-    currentEditingRecurrentIndex = index;
-
-    isEditingRecurrent = true;
-
-}
-
-
-function deleteSavingsJar(jarId) {
-
-    if (confirm('¿Estás seguro de que quieres eliminar esta alcancía? Todos los ahorros asociados se perderán.')) {
-
-        // Eliminar la alcancía
-
-        savingsJars = savingsJars.filter(jar => jar.id !== jarId);
-
-
-        // Eliminar todos los ahorros asociados a esta alcancía
-
-        for (const month in savings) {
-
-            savings[month] = savings[month].filter(saving => saving.jarId !== jarId);
-
-        }
-
-
-        saveSavingsJars();
-
-        saveSavings();
-
-        loadSavingsJars();
-
-        updateSavingsTotal();
-
-    }
-
-}
-
-
-function editSavingsJar(jarId) {
-
-    const jar = savingsJars.find(j => j.id === jarId);
-
-
-    // Llenar el formulario con los datos de la alcancía
-
-    document.getElementById('jar-name').value = jar.name;
-
-    document.getElementById('jar-target').value = jar.target || '';
-
-    document.getElementById('jar-description').value = jar.description || '';
-
-
-    // Eliminar la alcancía original
-
-    savingsJars = savingsJars.filter(j => j.id !== jarId);
-
-    saveSavingsJars();
-
-}
-
-
-function withdrawFromJar(jarId) {
-
-    const jar = savingsJars.find(j => j.id === jarId);
-
-    const savedAmount = calculateJarSavings(jarId);
-
-
-    if (savedAmount <= 0) {
-
-        alert('Esta alcancía no tiene fondos para retirar');
-
-        return;
-
-    }
-
-
-    const amount = parseFloat(prompt(`¿Cuánto deseas retirar de ${jar.name}? (Máximo: $${savedAmount.toFixed(2)})`, savedAmount.toFixed(2)));
-
-
-    if (isNaN(amount) || amount <= 0) {
-
-        alert('Monto inválido');
-
-        return;
-
-    }
-
-
-    if (amount > savedAmount) {
-
-        alert('No puedes retirar más de lo que tienes ahorrado');
-
-        return;
-
-    }
-
-
-    // Registrar como un ingreso
-
-    if (!income[currentMonthYear]) {
-
-        income[currentMonthYear] = [];
-
-    }
-
-
-    income[currentMonthYear].push({
-
-        date: new Date().toISOString().slice(0, 10),
-
-        source: 'Retiro de ahorros',
-
-        description: `Retiro de ${jar.name}`,
-
-        amount: amount
-
-    });
-
-
-    // Registrar como un gasto negativo en ahorros (para mantener el historial)
-
-    if (!savings[currentMonthYear]) {
-
-        savings[currentMonthYear] = [];
-
-    }
-
-
-    savings[currentMonthYear].push({
-
-        date: new Date().toISOString().slice(0, 10),
-
-        jarId: jar.id,
-
-        amount: -amount,
-
-        description: 'Retiro de fondos'
-
-    });
-
-
-    saveIncome();
-
-    saveSavings();
-
-    loadIncome();
-
-    loadSavings();
-
-    updateTotals();
-
-    updateSavingsTotal();
-
-
-    showNotification(`Se retiraron $${amount.toFixed(2)} de ${jar.name}`, 'success');
-
-}
-
-
-function updateRecurrentExpense() {
-
-    const categoryId = parseInt(document.getElementById('expense-category').value);
-
-    const description = document.getElementById('expense-description').value;
-
-    const amount = parseFloat(document.getElementById('expense-amount').value);
-
-
-    // Actualizar el gasto recurrente
-
-    recurrentExpenses[currentEditingRecurrentIndex] = {
-
-        categoryId,
-
-        description,
-
-        amount
-
-    };
-
-
-    saveRecurrentExpenses();
-
-    loadRecurrentExpenses();
-
-
-    // Restaurar el formulario
-
-    resetExpenseForm();
-
-
-    showNotification('Gasto recurrente actualizado correctamente', 'success');
-
-}
-
-
-function resetExpenseForm() {
-
-    document.getElementById('expense-form').reset();
-
-    document.getElementById('expense-date').valueAsDate = new Date();
-
-    document.getElementById('expense-recurrent').checked = false;
-
-
-    const submitButton = document.getElementById('expense-submit-btn');
-
-    submitButton.textContent = 'Agregar Gasto';
-
-    submitButton.classList.remove('edit-mode');
-
-
-    currentEditingRecurrentIndex = null;
-
-    isEditingRecurrent = false;
-
-}
-
-
-function addSingleRecurrentToCurrentMonth(index) {
-
-    const recurrentExpense = recurrentExpenses[index];
-
-    const today = new Date().toISOString().slice(0, 10);
-
-
-    if (!expenses[currentMonthYear]) {
-
-        expenses[currentMonthYear] = [];
-
-    }
-
-
-    expenses[currentMonthYear].push({
-
-        date: today,
-
-        categoryId: recurrentExpense.categoryId,
-
-        description: recurrentExpense.description,
-
-        amount: recurrentExpense.amount,
-
-        recurrent: false // No marcamos como recurrente para no duplicar
-
-    });
-
-
-    saveExpenses();
-
-    loadExpenses();
-
-    updateTotals();
-
-    updateBudgetProgress();
-
-
-    showNotification('Gasto recurrente agregado al mes actual', 'success');
-
-}
-
-
-function copyRecurrentExpensesToCurrentMonth() {
-
-    if (recurrentExpenses.length === 0) {
-
-        alert('No tienes gastos recurrentes registrados');
-
-        return;
-
-    }
-
-
-    if (!confirm(`¿Agregar ${recurrentExpenses.length} gastos recurrentes al mes actual?`)) {
-
-        return;
-
-    }
-
-
-    const today = new Date().toISOString().slice(0, 10);
-
-
-    if (!expenses[currentMonthYear]) {
-
-        expenses[currentMonthYear] = [];
-
-    }
-
-
-    recurrentExpenses.forEach(expense => {
-
-        expenses[currentMonthYear].push({
-
-            date: today,
-
-            categoryId: expense.categoryId,
-
-            description: expense.description,
-
-            amount: expense.amount,
-
-            recurrent: false // No marcamos como recurrente para no duplicar
-
-        });
-
-    });
-
-
-    saveExpenses();
-
-    loadExpenses();
-
-    updateTotals();
-
-    updateBudgetProgress();
-
-
-    showNotification(`${recurrentExpenses.length} gastos recurrentes agregados al mes actual`, 'success');
-
-}
-
-
-function addRecurrentToNextMonth() {
-
-    if (recurrentExpenses.length === 0) {
-
-        alert('No tienes gastos recurrentes registrados');
-
-        return;
-
-    }
-
-
-    // Obtener el próximo mes
-
-    const nextMonth = new Date();
-
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
-
-    const nextMonthYear = nextMonth.toISOString().slice(0, 7);
-
-    const firstDayNextMonth = nextMonthYear + '-01';
-
-
-    if (!expenses[nextMonthYear]) {
-
-        expenses[nextMonthYear] = [];
-
-    }
-
-
-    recurrentExpenses.forEach(expense => {
-
-        expenses[nextMonthYear].push({
-
-            date: firstDayNextMonth,
-
-            categoryId: expense.categoryId,
-
-            description: expense.description,
-
-            amount: expense.amount,
-
-            recurrent: false // No marcamos como recurrente para no duplicar
-
-        });
-
-    });
-
-
-    saveExpenses();
-
-
-    showNotification(`${recurrentExpenses.length} gastos recurrentes programados para el próximo mes`, 'success');
-
-}
-
-
-function addCategory() {
-
-    const name = document.getElementById('category-name').value.trim();
-
-    const color = document.getElementById('category-color').value;
-
-    const budgetInput = document.getElementById('category-budget');
-
-    const budget = budgetInput.value ? parseFloat(budgetInput.value) : null;
-
-
-    if (!name) return;
-
-
-    const newCategory = {
-
-        id: nextCategoryId++,
-
-        name,
-
-        color,
-
-        budget
-
-    };
-
-
-    categories.push(newCategory);
-
-    saveCategories();
-
-    loadCategories();
-
-
-    // Limpiar formulario
-
-    document.getElementById('category-form').reset();
-
-    document.getElementById('category-color').value = '#3498db';
-
-}
-
-
-function deleteCategory(id) {
-
-    if (confirm('¿Estás seguro de que quieres eliminar esta categoría? Los gastos asociados no se eliminarán, pero perderán la categoría.')) {
-
-        // Verificar si hay gastos con esta categoría
-
-        let hasExpenses = false;
-
-        for (const month in expenses) {
-
-            if (expenses[month].some(exp => exp.categoryId === id)) {
-
-                hasExpenses = true;
-
-                break;
-
-            }
-
-        }
-
-
-        // Verificar si hay gastos recurrentes con esta categoría
-
-        const hasRecurrent = recurrentExpenses.some(exp => exp.categoryId === id);
-
-
-        if (hasExpenses || hasRecurrent) {
-
-            if (!confirm('Hay gastos asociados a esta categoría. Si la eliminas, esos gastos quedarán sin categoría. ¿Continuar?')) {
-
-                return;
-
-            }
-
-        }
-
-
-        categories = categories.filter(c => c.id !== id);
-
-        saveCategories();
-
-        loadCategories();
-
-        loadExpenses();
-
-        loadRecurrentExpenses();
-
-        updateBudgetProgress();
-
-    }
-
-}
-
-
-function updateTotals() {
-
-    let totalExpenses = 0;
-
-    let totalIncome = 0;
-
-    let totalSavings = 0;
-
-
-    if (expenses[currentMonthYear]) {
-
-        totalExpenses = expenses[currentMonthYear].reduce((sum, expense) => sum + expense.amount, 0);
-
-    }
-
-
-    if (income[currentMonthYear]) {
-
-        totalIncome = income[currentMonthYear].reduce((sum, incomeItem) => sum + incomeItem.amount, 0);
-
-    }
-
-
-    if (savings[currentMonthYear]) {
-
-        totalSavings = savings[currentMonthYear].reduce((sum, saving) => sum + saving.amount, 0);
-
-    }
-
-
-    const balance = totalIncome - totalExpenses - totalSavings;
-
-
-    document.getElementById('total-expenses').textContent = `Total gastado este mes: $${totalExpenses.toFixed(2)}`;
-
-    document.getElementById('total-income').textContent = `Total ingresos este mes: $${totalIncome.toFixed(2)}`;
-
-    document.getElementById('total-savings').textContent = `Total ahorrado este mes: $${totalSavings.toFixed(2)}`;
-
-    document.getElementById('total-balance').textContent = `Balance mensual: $${balance.toFixed(2)}`;
-
-
-    // Cambiar color del balance según sea positivo o negativo
-
-    const balanceElement = document.getElementById('total-balance');
-
-    if (balance < 0) {
-
-        balanceElement.style.backgroundColor = '#e74c3c';
-
-    } else {
-
-        balanceElement.style.backgroundColor = '#2ecc71';
-
-    }
-
-}
-
-
-function generateReport() {
-
-    const month = document.getElementById('report-month').value;
-
-    if (!month) return;
-
-
-    const monthExpenses = expenses[month] || [];
-
-    const monthIncome = income[month] || [];
-
-    const monthSavings = savings[month] || [];
-
-
-    // Agrupar gastos por categoría
-
-    const expensesByCategory = {};
-
-    monthExpenses.forEach(expense => {
-
-        const category = categories.find(c => c.id === expense.categoryId);
-
-        const categoryName = category ? category.name : 'Sin categoría';
-
-
-        if (!expensesByCategory[categoryName]) {
-
-            expensesByCategory[categoryName] = 0;
-
-        }
-
-        expensesByCategory[categoryName] += expense.amount;
-
-    });
-
-
-    // Agrupar ingresos por fuente
-
-    const incomeBySource = {};
-
-    monthIncome.forEach(incomeItem => {
-
-        const source = incomeItem.source;
-
-
-        if (!incomeBySource[source]) {
-
-            incomeBySource[source] = 0;
-
-        }
-
-        incomeBySource[source] += incomeItem.amount;
-
-    });
-
-
-    // Agrupar ahorros por alcancía
-
-    const savingsByJar = {};
-
-    monthSavings.forEach(saving => {
-
-        const jar = savingsJars.find(j => j.id === saving.jarId);
-
-        const jarName = jar ? jar.name : 'Alcancía eliminada';
-
-
-        if (!savingsByJar[jarName]) {
-
-            savingsByJar[jarName] = 0;
-
-        }
-
-        savingsByJar[jarName] += saving.amount;
-
-    });
-
-
-    // Preparar datos para las gráficas
-
-    const expenseLabels = Object.keys(expensesByCategory);
-
-    const expenseData = Object.values(expensesByCategory);
-
-    const expenseColors = expenseLabels.map(label => {
-
-        const category = categories.find(c => c.name === label);
-
-        return category ? category.color : '#95a5a6';
-
-    });
-
-
-    const incomeLabels = Object.keys(incomeBySource);
-
-    const incomeData = Object.values(incomeBySource);
-
-
-    const savingsLabels = Object.keys(savingsByJar);
-
-    const savingsData = Object.values(savingsByJar);
-
-
-    // Crear gráfica de gastos
-
-    const expenseCtx = document.getElementById('expenses-chart').getContext('2d');
-
-
-    // Destruir gráficas anteriores si existen
-
-    if (expensesChart) {
-
-        expensesChart.destroy();
-
-    }
-
-    if (incomeVsExpensesChart) {
-
-        incomeVsExpensesChart.destroy();
-
-    }
-
-    if (savingsChart) {
-
-        savingsChart.destroy();
-
-    }
-
-
-    expensesChart = new Chart(expenseCtx, {
-
-        type: 'pie',
-
-        data: {
-
-            labels: expenseLabels,
-
-            datasets: [{
-
-                data: expenseData,
-
-                backgroundColor: expenseColors,
-
-                borderWidth: 1
-
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            plugins: {
-
-                legend: {
-
-                    position: 'right',
-
-                },
-
-                title: {
-
-                    display: true,
-
-                    text: `Distribución de gastos - ${month}`
-
-                }
-
-            }
-
-        }
-
-    });
-
-
-    // Crear gráfica de ingresos vs gastos
-
-    const incomeVsExpensesCtx = document.getElementById('income-vs-expenses-chart').getContext('2d');
-
-
-    incomeVsExpensesChart = new Chart(incomeVsExpensesCtx, {
-
-        type: 'bar',
-
-        data: {
-
-            labels: ['Ingresos', 'Gastos', 'Ahorros'],
-
-            datasets: [{
-
-                label: 'Total',
-
-                data: [
-
-                    incomeData.reduce((sum, amount) => sum + amount, 0),
-
-                    expenseData.reduce((sum, amount) => sum + amount, 0),
-
-                    savingsData.reduce((sum, amount) => sum + amount, 0)
-
-                ],
-
-                backgroundColor: [
-
-                    '#2ecc71',
-
-                    '#e74c3c',
-
-                    '#1abc9c'
-
-                ],
-
-                borderWidth: 1
-
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            plugins: {
-
-                legend: {
-
-                    display: false
-
-                },
-
-                title: {
-
-                    display: true,
-
-                    text: `Ingresos vs Gastos vs Ahorros - ${month}`
-
-                }
-
-            },
-
-            scales: {
-
-                y: {
-
-                    beginAtZero: true
-
-                }
-
-            }
-
-        }
-
-    });
-
-
-    // Crear gráfica de ahorros
-
-    const savingsCtx = document.getElementById('savings-chart').getContext('2d');
-
-
-    savingsChart = new Chart(savingsCtx, {
-
-        type: 'pie',
-
-        data: {
-
-            labels: savingsLabels,
-
-            datasets: [{
-
-                data: savingsData,
-
-                backgroundColor: [
-
-                    '#1abc9c',
-
-                    '#3498db',
-
-                    '#9b59b6',
-
-                    '#f1c40f',
-
-                    '#e74c3c',
-
-                    '#2ecc71'
-
-                ],
-
-                borderWidth: 1
-
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            plugins: {
-
-                legend: {
-
-                    position: 'right',
-
-                },
-
-                title: {
-
-                    display: true,
-
-                    text: `Distribución de ahorros - ${month}`
-
-                }
-
-            }
-
-        }
-
-    });
-
-
-    // Comparación con meses anteriores
-
-    const months = Object.keys(expenses).sort();
-
-    const currentIndex = months.indexOf(month);
-
-
-    if (currentIndex > 0) {
-
-        const prevMonth = months[currentIndex - 1];
-
-        const prevExpenses = expenses[prevMonth].reduce((sum, exp) => sum + exp.amount, 0);
-
-        const currentExpenses = monthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-
-        const difference = currentExpenses - prevExpenses;
-
-        const percentage = (difference / prevExpenses) * 100;
-
-
-        let comparisonText = `Comparación con ${prevMonth}: `;
-
-        if (difference > 0) {
-
-            comparisonText += `Gastaste $${difference.toFixed(2)} más (${percentage.toFixed(2)}% aumento)`;
-
-        } else if (difference < 0) {
-
-            comparisonText += `Gastaste $${Math.abs(difference).toFixed(2)} menos (${Math.abs(percentage).toFixed(2)}% reducción)`;
-
-        } else {
-
-            comparisonText += `Gastaste lo mismo que el mes anterior`;
-
-        }
-
-
-        document.getElementById('monthly-comparison').textContent = comparisonText;
-
-    } else {
-
-        document.getElementById('monthly-comparison').textContent = 'No hay datos del mes anterior para comparar';
-
-    }
-
-}
-
-
-// Funciones de respaldo
-
-function exportData() {
-
-    const data = {
-
-        expenses: JSON.parse(localStorage.getItem('expenses')) || {},
-
-        income: JSON.parse(localStorage.getItem('income')) || {},
-
-        savings: JSON.parse(localStorage.getItem('savings')) || {},
-
-        savingsJars: JSON.parse(localStorage.getItem('savingsJars')) || [],
-
-        recurrentExpenses: JSON.parse(localStorage.getItem('recurrentExpenses')) || [],
-
-        categories: JSON.parse(localStorage.getItem('categories')) || [],
-
-        metadata: {
-
-            exportedAt: new Date().toISOString(),
-
-            appVersion: '1.3'
-
-        }
-
-    };
-
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-
-    a.href = url;
-
-    a.download = `backup-finanzas-${new Date().toISOString().slice(0,10)}.json`;
-
-    document.body.appendChild(a);
-
-    a.click();
-
-    document.body.removeChild(a);
-
-    URL.revokeObjectURL(url);
-
-
-    // Mostrar mensaje de éxito
-
-    const successMsg = document.getElementById('export-success');
-
-    successMsg.classList.remove('hidden');
-
-    setTimeout(() => successMsg.classList.add('hidden'), 3000);
-
-}
-
-
-function importData(event) {
-
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-
-        try {
-
-            const data = JSON.parse(e.target.result);
-
-            const statusElement = document.getElementById('import-status');
-
-
-            // Validar estructura básica del archivo
-
-            if (!data.expenses || !data.categories || !data.income || !data.recurrentExpenses || !data.savings || !data.savingsJars) {
-
-                statusElement.textContent = 'Error: El archivo no tiene el formato correcto.';
-
-                statusElement.style.color = 'red';
-
-                statusElement.classList.remove('hidden');
-
-                return;
-
-            }
-
-
-            if (confirm(`¿Estás seguro de que quieres importar estos datos?\n\n- ${Object.keys(data.expenses).length} meses de gastos\n- ${Object.keys(data.income).length} meses de ingresos\n- ${Object.keys(data.savings).length} meses de ahorros\n- ${data.recurrentExpenses.length} gastos recurrentes\n- ${data.savingsJars.length} alcancías\n- ${data.categories.length} categorías\n\nEsto sobrescribirá tus datos actuales.`)) {
-
-                localStorage.setItem('expenses', JSON.stringify(data.expenses));
-
-                localStorage.setItem('income', JSON.stringify(data.income));
-
-                localStorage.setItem('savings', JSON.stringify(data.savings));
-
-                localStorage.setItem('savingsJars', JSON.stringify(data.savingsJars));
-
-                localStorage.setItem('recurrentExpenses', JSON.stringify(data.recurrentExpenses));
-
-                localStorage.setItem('categories', JSON.stringify(data.categories));
-
-
-                // Recargar datos en la aplicación
-
-                expenses = data.expenses;
-
-                income = data.income;
-
-                savings = data.savings;
-
-                savingsJars = data.savingsJars;
-
-                recurrentExpenses = data.recurrentExpenses;
-
-                categories = data.categories;
-
-                nextCategoryId = categories.length > 0 ? Math.max(...categories.map(c => c.id)) + 1 : 1;
-
-                nextJarId = savingsJars.length > 0 ? Math.max(...savingsJars.map(j => j.id)) + 1 : 1;
-
-
-                loadCategories();
-
-                loadExpenses();
-
-                loadIncome();
-
-                loadSavings();
-
-                loadSavingsJars();
-
-                loadRecurrentExpenses();
-
-                updateTotals();
-
-                updateBudgetProgress();
-
-                updateSavingsTotal();
-
-
-                statusElement.textContent = '¡Datos importados correctamente!';
-
-                statusElement.style.color = 'green';
-
-                statusElement.classList.remove('hidden');
-
-            }
-
-        } catch (error) {
-
-            document.getElementById('import-status').textContent = 'Error al leer el archivo: ' + error.message;
-
-            document.getElementById('import-status').style.color = 'red';
-
-            document.getElementById('import-status').classList.remove('hidden');
-
-        }
-
-    };
-
-    reader.onerror = function() {
-
-        document.getElementById('import-status').textContent = 'Error al leer el archivo';
-
-        document.getElementById('import-status').style.color = 'red';
-
-        document.getElementById('import-status').classList.remove('hidden');
-
-    };
-
-    reader.readAsText(file);
-
-
-    // Resetear el input para permitir importar el mismo archivo otra vez
-
-    event.target.value = '';
-
-}
-
-
-function resetData() {
-
-    if (confirm('¿ESTÁS SEGURO DE QUE QUIERES BORRAR TODOS LOS DATOS?\n\nEsta acción no se puede deshacer y perderás todos tus registros.')) {
-
-        localStorage.removeItem('expenses');
-
-        localStorage.removeItem('income');
-
-        localStorage.removeItem('savings');
-
-        localStorage.removeItem('savingsJars');
-
-        localStorage.removeItem('recurrentExpenses');
-
-        localStorage.removeItem('categories');
-
-
-        // Resetear variables
-
-        expenses = {};
-
-        income = {};
-
-        savings = {};
-
-        savingsJars = [];
-
-        recurrentExpenses = [];
-
-        categories = [
-
-            { id: 1, name: 'Comida', color: '#e74c3c', budget: 3000 },
-
-            { id: 2, name: 'Transporte', color: '#3498db', budget: 1500 },
-
-            { id: 3, name: 'Entretenimiento', color: '#9b59b6', budget: 1000 },
-
-            { id: 4, name: 'Servicios', color: '#2ecc71', budget: 2500 }
-
-        ];
-
-        nextCategoryId = 5;
-
-        nextJarId = 1;
-
-
-        // Recargar la aplicación
-
-        loadCategories();
-
-        loadExpenses();
-
-        loadIncome();
-
-        loadSavings();
-
-        loadSavingsJars();
-
-        loadRecurrentExpenses();
-
-        updateTotals();
-
-        updateBudgetProgress();
-
-        updateSavingsTotal();
-
-
-        alert('Todos los datos han sido borrados. La aplicación se ha reiniciado con categorías predeterminadas.');
-
-    }
-
-}
-
-
-function saveExpenses() {
-
-    localStorage.setItem('expenses', JSON.stringify(expenses));
-
-}
-
-
-function saveIncome() {
-
-    localStorage.setItem('income', JSON.stringify(income));
-
-}
-
-
-function saveSavings() {
-
-    localStorage.setItem('savings', JSON.stringify(savings));
-
-}
-
-
-function saveSavingsJars() {
-
-    localStorage.setItem('savingsJars', JSON.stringify(savingsJars));
-
-}
-
-
-function saveRecurrentExpenses() {
-
-    localStorage.setItem('recurrentExpenses', JSON.stringify(recurrentExpenses));
-
-}
-
-
-function saveCategories() {
-
-    localStorage.setItem('categories', JSON.stringify(categories));
-
-}
+    <div class="container">
+        <h1>Control de Gastos, Ingresos y Ahorros</h1>
+        
+        <div class="month-selector">
+            <div class="form-group">
+                <label for="month-year">Selecciona el mes y año:</label>
+                <input type="month" id="month-year" name="month-year">
+                <button id="new-month-btn" class="btn-secondary">Nuevo Mes</button>
+                <button id="copy-prev-month" class="btn-info" title="Copiar gastos recurrentes del mes anterior">Copiar Gastos Recurrentes</button>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="transactions">Transacciones</div>
+            <div class="tab" data-tab="categories">Categorías</div>
+            <div class="tab" data-tab="savings">Ahorros</div>
+            <div class="tab" data-tab="reports">Reportes</div>
+            <div class="tab" data-tab="recurrent">Recurrentes</div>
+            <div class="tab" data-tab="backup">Respaldo</div>
+        </div>
+        
+        <div class="tab-content active" id="transactions-tab">
+            <div class="tabs" style="margin-bottom: 10px;">
+                <div class="tab active" data-subtab="expenses">Gastos</div>
+                <div class="tab" data-subtab="income">Ingresos</div>
+            </div>
+            
+            <div class="subtab-content active" id="expenses-subtab">
+                <h2>Registrar Nuevo Gasto</h2>
+                <form id="expense-form">
+                    <div class="form-group">
+                        <label for="expense-date">Fecha:</label>
+                        <input type="date" id="expense-date" name="expense-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-category">Categoría:</label>
+                        <select id="expense-category" name="expense-category" required>
+                            <!-- Las categorías se llenarán con JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-description">Descripción:</label>
+                        <input type="text" id="expense-description" name="expense-description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-amount">Monto:</label>
+                        <input type="number" id="expense-amount" name="expense-amount" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="expense-recurrent"> ¿Gasto recurrente?
+                        </label>
+                    </div>
+                    <button type="submit" id="expense-submit-btn">Agregar Gasto</button>
+                </form>
+                
+                <h2>Gastos del Mes</h2>
+                <table id="expenses-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Categoría</th>
+                            <th>Descripción</th>
+                            <th>Monto</th>
+                            <th>Recurrente</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los gastos se llenarán con JavaScript -->
+                    </tbody>
+                </table>
+                <div class="total total-expenses" id="total-expenses">
+                    Total gastado este mes: $0.00
+                </div>
+            </div>
+            
+            <div class="subtab-content" id="income-subtab">
+                <h2>Registrar Nuevo Ingreso</h2>
+                <form id="income-form">
+                    <div class="form-group">
+                        <label for="income-date">Fecha:</label>
+                        <input type="date" id="income-date" name="income-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="income-source">Fuente:</label>
+                        <select id="income-source" name="income-source" required>
+                            <option value="" disabled selected>-- Selecciona una fuente --</option>
+                            <option value="Salario">Salario</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Inversiones">Inversiones</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="income-description">Descripción:</label>
+                        <input type="text" id="income-description" name="income-description">
+                    </div>
+                    <div class="form-group">
+                        <label for="income-amount">Monto:</label>
+                        <input type="number" id="income-amount" name="income-amount" step="0.01" min="0" required>
+                    </div>
+                    <button type="submit">Agregar Ingreso</button>
+                </form>
+                
+                <h2>Ingresos del Mes</h2>
+                <table id="income-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Fuente</th>
+                            <th>Descripción</th>
+                            <th>Monto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los ingresos se llenarán con JavaScript -->
+                    </tbody>
+                </table>
+                <div class="total total-income" id="total-income">
+                    Total ingresos este mes: $0.00
+                </div>
+            </div>
+            
+            <div class="total total-balance" id="total-balance">
+                Balance mensual: $0.00
+            </div>
+            <div class="total total-savings" id="total-savings">
+                Total ahorrado este mes: $0.00
+            </div>
+        </div>
+        
+        <div class="tab-content" id="categories-tab">
+            <h2>Administrar Categorías</h2>
+            <form id="category-form">
+                <div class="form-group">
+                    <label for="category-name">Nombre de la categoría:</label>
+                    <input type="text" id="category-name" name="category-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="category-color">Color:</label>
+                    <input type="color" id="category-color" name="category-color" value="#3498db">
+                </div>
+                <div class="form-group">
+                    <label for="category-budget">Presupuesto mensual (opcional):</label>
+                    <input type="number" id="category-budget" name="category-budget" step="0.01" min="0">
+                    <small>Deja en blanco si no quieres establecer un presupuesto</small>
+                </div>
+                <button type="submit">Agregar Categoría</button>
+            </form>
+            
+            <h2>Tus Categorías</h2>
+            <table id="categories-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Color</th>
+                        <th>Presupuesto</th>
+                        <th>Progreso</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Las categorías se llenarán con JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="tab-content" id="savings-tab">
+            <h2>Mis Ahorros</h2>
+            
+            <div class="savings-form">
+                <h3>Crear Nueva Alcancía</h3>
+                <form id="savings-jar-form">
+                    <div class="form-group">
+                        <label for="jar-name">Nombre de la alcancía:</label>
+                        <input type="text" id="jar-name" name="jar-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jar-target">Meta de ahorro (opcional):</label>
+                        <input type="number" id="jar-target" name="jar-target" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="jar-description">Descripción:</label>
+                        <input type="text" id="jar-description" name="jar-description">
+                    </div>
+                    <button type="submit" class="btn-savings">Crear Alcancía</button>
+                </form>
+            </div>
+            
+            <div class="savings-form">
+                <h3>Agregar Ahorro Mensual</h3>
+                <form id="savings-form">
+                    <div class="form-group">
+                        <label for="savings-date">Fecha:</label>
+                        <input type="date" id="savings-date" name="savings-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-jar">Alcancía:</label>
+                        <select id="savings-jar" name="savings-jar" required>
+                            <!-- Las alcancías se llenarán con JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-amount">Monto a ahorrar:</label>
+                        <input type="number" id="savings-amount" name="savings-amount" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-description">Descripción:</label>
+                        <input type="text" id="savings-description" name="savings-description">
+                    </div>
+                    <button type="submit" class="btn-savings">Agregar Ahorro</button>
+                </form>
+            </div>
+            
+            <h2>Tus Alcancías</h2>
+            <div id="savings-jars-container">
+                <!-- Las alcancías se llenarán con JavaScript -->
+            </div>
+            
+            <div class="total total-savings" id="total-all-savings">
+                Total ahorrado: $0.00
+            </div>
+        </div>
+        
+        <div class="tab-content" id="reports-tab">
+            <h2>Reportes Mensuales</h2>
+            <div class="form-group">
+                <label for="report-month">Selecciona mes para reporte:</label>
+                <input type="month" id="report-month" name="report-month">
+                <button id="generate-report">Generar Reporte</button>
+            </div>
+            
+            <div id="report-results">
+                <canvas id="expenses-chart" width="400" height="200"></canvas>
+                <canvas id="income-vs-expenses-chart" width="400" height="200" style="margin-top: 20px;"></canvas>
+                <canvas id="savings-chart" width="400" height="200" style="margin-top: 20px;"></canvas>
+                <div id="monthly-comparison"></div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="recurrent-tab">
+            <h2>Gastos Recurrentes</h2>
+            <p>Estos gastos se pueden copiar al mes siguiente automáticamente.</p>
+            
+            <table id="recurrent-expenses-table">
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los gastos recurrentes se llenarán con JavaScript -->
+                </tbody>
+            </table>
+            
+            <div class="form-group" style="margin-top: 20px;">
+                <button id="add-to-next-month" class="btn-info">Agregar todos al próximo mes</button>
+                <small>Se crearán como gastos normales que podrás editar</small>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="backup-tab">
+            <h2>Respaldo de Datos</h2>
+            
+            <div class="backup-section">
+                <h3>Exportar Datos</h3>
+                <p>Guarda una copia de seguridad de todos tus datos en un archivo JSON.</p>
+                <button id="export-btn" class="btn-warning">Exportar Backup</button>
+                <p id="export-success" class="hidden" style="color: green; margin-top: 10px;">¡Backup exportado correctamente!</p>
+            </div>
+            
+            <div class="backup-section">
+                <h3>Importar Datos</h3>
+                <p>Restaura tus datos desde un archivo JSON previamente exportado.</p>
+                <input type="file" id="import-file" accept=".json" class="hidden">
+                <button id="import-btn" class="btn-warning">Seleccionar Archivo para Importar</button>
+                <p id="import-status" class="hidden" style="margin-top: 10px;"></p>
+            </div>
+            
+            <div class="backup-section">
+                <h3>Borrar Todos los Datos</h3>
+                <p>¡Precaución! Esta acción eliminará todos tus datos permanentemente.</p>
+                <button id="reset-btn" class="btn-danger">Borrar Todos los Datos</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Variables globales
+        let currentMonthYear = new Date().toISOString().slice(0, 7);
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || {};
+        let income = JSON.parse(localStorage.getItem('income')) || {};
+        let savings = JSON.parse(localStorage.getItem('savings')) || {};
+        let savingsJars = JSON.parse(localStorage.getItem('savingsJars')) || [];
+        let recurrentExpenses = JSON.parse(localStorage.getItem('recurrentExpenses')) || [];
+        let categories = JSON.parse(localStorage.getItem('categories')) || [
+            { id: 1, name: 'Comida', color: '#e74c3c', budget: 3000 },
+            { id: 2, name: 'Transporte', color: '#3498db', budget: 1500 },
+            { id: 3, name: 'Entretenimiento', color: '#9b59b6', budget: 1000 },
+            { id: 4, name: 'Servicios', color: '#2ecc71', budget: 2500 }
+        ];
+        let nextCategoryId = categories.length > 0 ? Math.max(...categories.map(c => c.id)) + 1 : 1;
+        let nextJarId = savingsJars.length > 0 ? Math.max(...savingsJars.map(j => j.id)) + 1 : 1;
+        let expensesChart = null;
+        let incomeVsExpensesChart = null;
+        let savingsChart = null;
+        let notifications = [];
+        let currentEditingRecurrentIndex = null;
+        let isEditingRecurrent = false;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar fecha actual
+            document.getElementById('month-year').value = currentMonthYear;
+            document.getElementById('expense-date').valueAsDate = new Date();
+            document.getElementById('income-date').valueAsDate = new Date();
+            document.getElementById('savings-date').valueAsDate = new Date();
+        
+            // Cargar datos
+            loadCategories();
+            loadExpenses();
+            loadIncome();
+            loadSavings();
+            loadSavingsJars();
+            loadRecurrentExpenses();
+            updateTotals();
+            updateBudgetProgress();
+            
+            // Event listeners
+            document.getElementById('month-year').addEventListener('change', function() {
+                currentMonthYear = this.value;
+                loadExpenses();
+                loadIncome();
+                loadSavings();
+                updateTotals();
+                updateBudgetProgress();
+            });
+            
+            document.getElementById('new-month-btn').addEventListener('click', function() {
+                const now = new Date();
+                currentMonthYear = now.toISOString().slice(0, 7);
+                document.getElementById('month-year').value = currentMonthYear;
+                loadExpenses();
+                loadIncome();
+                loadSavings();
+                updateTotals();
+                updateBudgetProgress();
+            });
+            
+            document.getElementById('copy-prev-month').addEventListener('click', copyRecurrentExpensesToCurrentMonth);
+            
+            document.getElementById('expense-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (isEditingRecurrent) {
+                    updateRecurrentExpense();
+                } else {
+                    addExpense();
+                }
+            });
+            
+            document.getElementById('income-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addIncome();
+            });
+            
+            document.getElementById('savings-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addSavings();
+            });
+            
+            document.getElementById('savings-jar-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addSavingsJar();
+            });
+            
+            document.getElementById('category-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addCategory();
+            });
+            
+            document.getElementById('generate-report').addEventListener('click', function() {
+                generateReport();
+            });
+            
+            document.getElementById('add-to-next-month').addEventListener('click', addRecurrentToNextMonth);
+            
+            // Tabs principales
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remover active de todos los tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Agregar active al tab clickeado
+                    this.classList.add('active');
+                    
+                    // Ocultar todos los contenidos
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Mostrar el contenido correspondiente
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Subtabs (transacciones)
+            const subtabs = document.querySelectorAll('[data-subtab]');
+            subtabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remover active de todos los subtabs
+                    subtabs.forEach(t => t.classList.remove('active'));
+                    // Agregar active al subtab clickeado
+                    this.classList.add('active');
+                    
+                    // Ocultar todos los subcontenidos
+                    document.querySelectorAll('.subtab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Mostrar el subcontenido correspondiente
+                    const subtabId = this.getAttribute('data-subtab');
+                    document.getElementById(`${subtabId}-subtab`).classList.add('active');
+                });
+            });
+            
+            // Backup/restore
+            document.getElementById('export-btn').addEventListener('click', exportData);
+            document.getElementById('import-btn').addEventListener('click', function() {
+                document.getElementById('import-file').click();
+            });
+            document.getElementById('import-file').addEventListener('change', importData);
+            document.getElementById('reset-btn').addEventListener('click', resetData);
+        });
+
+        // Funciones principales
+        function loadCategories() {
+            const categorySelect = document.getElementById('expense-category');
+            const categoriesTable = document.getElementById('categories-table').querySelector('tbody');
+            
+            // Limpiar select
+            categorySelect.innerHTML = '';
+            
+            // Limpiar tabla
+            categoriesTable.innerHTML = '';
+            
+            // Agregar opción por defecto
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Selecciona una categoría --';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            categorySelect.appendChild(defaultOption);
+            
+            // Llenar select y tabla
+            categories.forEach(category => {
+                // Opción para el select
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+                
+                // Calcular gasto actual para esta categoría
+                const spent = calculateCategorySpending(category.id);
+                const budget = category.budget || 0;
+                const percentage = budget > 0 ? (spent / budget) * 100 : 0;
+                
+                // Fila para la tabla
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${category.name}</td>
+                    <td><span class="category-color" style="background-color: ${category.color};"></span>${category.color}</td>
+                    <td>${budget > 0 ? '$' + budget.toFixed(2) : 'Sin presupuesto'}</td>
+                    <td>
+                        ${budget > 0 ? `
+                        <div class="budget-progress">
+                            <div class="budget-progress-bar" 
+                                 style="width: ${Math.min(percentage, 100)}%; 
+                                        ${percentage > 100 ? 'background-color: #e74c3c' : percentage > 80 ? 'background-color: #f39c12' : ''}">
+                            </div>
+                        </div>
+                        <div class="budget-info">
+                            <span>$${spent.toFixed(2)} gastados</span>
+                            <span>${percentage.toFixed(0)}%</span>
+                        </div>
+                        ` : 'N/A'}
+                    </td>
+                    <td>
+                        <button class="btn-secondary delete-category" data-id="${category.id}">Eliminar</button>
+                    </td>
+                `;
+                categoriesTable.appendChild(row);
+            });
+            
+            // Event listeners para botones de eliminar
+            document.querySelectorAll('.delete-category').forEach(button => {
+                button.addEventListener('click', function() {
+                    const categoryId = parseInt(this.getAttribute('data-id'));
+                    deleteCategory(categoryId);
+                });
+            });
+        }
+        
+        function loadSavingsJars() {
+            const jarSelect = document.getElementById('savings-jar');
+            const jarsContainer = document.getElementById('savings-jars-container');
+            
+            // Limpiar select
+            jarSelect.innerHTML = '';
+            
+            // Limpiar contenedor
+            jarsContainer.innerHTML = '';
+            
+            // Agregar opción por defecto
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Selecciona una alcancía --';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            jarSelect.appendChild(defaultOption);
+            
+            // Llenar select y contenedor
+            savingsJars.forEach(jar => {
+                // Opción para el select
+                const option = document.createElement('option');
+                option.value = jar.id;
+                option.textContent = jar.name;
+                jarSelect.appendChild(option);
+                
+                // Calcular ahorro total para esta alcancía
+                const saved = calculateJarSavings(jar.id);
+                const percentage = jar.target > 0 ? (saved / jar.target) * 100 : 0;
+                
+                // Crear elemento de alcancía
+                const jarElement = document.createElement('div');
+                jarElement.className = 'savings-jar';
+                jarElement.innerHTML = `
+                    <h3>${jar.name}</h3>
+                    ${jar.description ? `<p>${jar.description}</p>` : ''}
+                    <div class="savings-progress">
+                        <div class="savings-progress-bar" 
+                             style="width: ${Math.min(percentage, 100)}%">
+                        </div>
+                    </div>
+                    <div class="budget-info">
+                        <span>$${saved.toFixed(2)} ahorrados</span>
+                        ${jar.target > 0 ? `<span>${percentage.toFixed(0)}% de $${jar.target.toFixed(2)}</span>` : ''}
+                    </div>
+                    <div class="savings-actions">
+                        <button class="btn-secondary delete-jar" data-id="${jar.id}">Eliminar</button>
+                        <button class="btn-secondary edit-jar" data-id="${jar.id}">Editar</button>
+                        <button class="btn-savings withdraw-jar" data-id="${jar.id}">Retirar</button>
+                    </div>
+                `;
+                jarsContainer.appendChild(jarElement);
+            });
+            
+            // Event listeners para botones de alcancías
+            document.querySelectorAll('.delete-jar').forEach(button => {
+                button.addEventListener('click', function() {
+                    const jarId = parseInt(this.getAttribute('data-id'));
+                    deleteSavingsJar(jarId);
+                });
+            });
+            
+            document.querySelectorAll('.edit-jar').forEach(button => {
+                button.addEventListener('click', function() {
+                    const jarId = parseInt(this.getAttribute('data-id'));
+                    editSavingsJar(jarId);
+                });
+            });
+            
+            document.querySelectorAll('.withdraw-jar').forEach(button => {
+                button.addEventListener('click', function() {
+                    const jarId = parseInt(this.getAttribute('data-id'));
+                    withdrawFromJar(jarId);
+                });
+            });
+        }
+        
+        function calculateJarSavings(jarId) {
+            if (!savings[currentMonthYear]) return 0;
+            
+            return savings[currentMonthYear]
+                .filter(saving => saving.jarId === jarId)
+                .reduce((sum, saving) => sum + saving.amount, 0);
+        }
+        
+        function loadSavings() {
+            if (!savings[currentMonthYear]) {
+                savings[currentMonthYear] = [];
+                saveSavings();
+            }
+            
+            updateSavingsTotal();
+        }
+        
+        function updateSavingsTotal() {
+            let monthlySavings = 0;
+            let totalSavings = 0;
+            
+            if (savings[currentMonthYear]) {
+                monthlySavings = savings[currentMonthYear].reduce((sum, saving) => sum + saving.amount, 0);
+            }
+            
+            // Calcular ahorro total en todas las alcancías
+            savingsJars.forEach(jar => {
+                totalSavings += calculateJarSavings(jar.id);
+            });
+            
+            document.getElementById('total-savings').textContent = `Total ahorrado este mes: $${monthlySavings.toFixed(2)}`;
+            document.getElementById('total-all-savings').textContent = `Total ahorrado: $${totalSavings.toFixed(2)}`;
+        }
+        
+        function calculateCategorySpending(categoryId) {
+            if (!expenses[currentMonthYear]) return 0;
+            
+            return expenses[currentMonthYear]
+                .filter(expense => expense.categoryId === categoryId)
+                .reduce((sum, expense) => sum + expense.amount, 0);
+        }
+        
+        function updateBudgetProgress() {
+            if (!expenses[currentMonthYear]) return;
+            
+            // Verificar si alguna categoría supera el 80% o 100% del presupuesto
+            categories.forEach(category => {
+                if (category.budget) {
+                    const spent = calculateCategorySpending(category.id);
+                    const percentage = (spent / category.budget) * 100;
+                    
+                    if (percentage > 100) {
+                        showNotification(`¡Atención! Has superado el presupuesto de ${category.name} (${percentage.toFixed(0)}%)`, 'danger');
+                    } else if (percentage > 80) {
+                        showNotification(`¡Cuidado! Estás cerca del límite en ${category.name} (${percentage.toFixed(0)}%)`, 'warning');
+                    }
+                }
+            });
+        }
+        
+        function showNotification(message, type = 'danger') {
+            // Evitar notificaciones duplicadas
+            if (notifications.includes(message)) return;
+            notifications.push(message);
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+                notifications = notifications.filter(msg => msg !== message);
+            }, 5000);
+        }
+        
+        function loadExpenses() {
+            const expensesTable = document.getElementById('expenses-table').querySelector('tbody');
+            expensesTable.innerHTML = '';
+            
+            if (!expenses[currentMonthYear]) {
+                expenses[currentMonthYear] = [];
+                saveExpenses();
+                return;
+            }
+            
+            expenses[currentMonthYear].forEach((expense, index) => {
+                const category = categories.find(c => c.id === expense.categoryId);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${expense.date}</td>
+                    <td><span class="category-color" style="background-color: ${category ? category.color : '#ccc'};"></span>${category ? category.name : 'Categoría eliminada'}</td>
+                    <td>${expense.description}</td>
+                    <td>$${expense.amount.toFixed(2)}</td>
+                    <td>${expense.recurrent ? 'Sí' : 'No'}</td>
+                    <td>
+                        <button class="btn-secondary delete-expense" data-index="${index}">Eliminar</button>
+                        <button class="btn-secondary edit-expense" data-index="${index}">Editar</button>
+                    </td>
+                `;
+                expensesTable.appendChild(row);
+            });
+
+            // Event listeners para botones
+            document.querySelectorAll('.delete-expense').forEach(button => {
+                button.addEventListener('click', function() {
+                    const expenseIndex = parseInt(this.getAttribute('data-index'));
+                    deleteExpense(expenseIndex);
+                });
+            });
+
+            document.querySelectorAll('.edit-expense').forEach(button => {
+                button.addEventListener('click', function() {
+                    const expenseIndex = parseInt(this.getAttribute('data-index'));
+                    editExpense(expenseIndex);
+                });
+            });
+        }
+
+        function loadIncome() {
+            const incomeTable = document.getElementById('income-table').querySelector('tbody');
+            incomeTable.innerHTML = '';
+
+            if (!income[currentMonthYear]) {
+                income[currentMonthYear] = [];
+                saveIncome();
+                return;
+            }
+
+            income[currentMonthYear].forEach((incomeItem, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${incomeItem.date}</td>
+                    <td>${incomeItem.source}</td>
+                    <td>${incomeItem.description || '-'}</td>
+                    <td>$${incomeItem.amount.toFixed(2)}</td>
+                    <td>
+                        <button class="btn-secondary delete-income" data-index="${index}">Eliminar</button>
+                        <button class="btn-secondary edit-income" data-index="${index}">Editar</button>
+                    </td>
+                `;
+                incomeTable.appendChild(row);
+            });
+
+            // Event listeners para botones
+            document.querySelectorAll('.delete-income').forEach(button => {
+                button.addEventListener('click', function() {
+                    const incomeIndex = parseInt(this.getAttribute('data-index'));
+                    deleteIncome(incomeIndex);
+                });
+            });
+
+            document.querySelectorAll('.edit-income').forEach(button => {
+                button.addEventListener('click', function() {
+                    const incomeIndex = parseInt(this.getAttribute('data-index'));
+                    editIncome(incomeIndex);
+                });
+            });
+        }
+
+        function loadRecurrentExpenses() {
+            const recurrentTable = document.getElementById('recurrent-expenses-table').querySelector('tbody');
+            recurrentTable.innerHTML = '';
+
+            recurrentExpenses.forEach((expense, index) => {
+                const category = categories.find(c => c.id === expense.categoryId);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="category-color" style="background-color: ${category ? category.color : '#ccc'};"></span>${category ? category.name : 'Categoría eliminada'}</td>
+                    <td>${expense.description}</td>
+                    <td>$${expense.amount.toFixed(2)}</td>
+                    <td class="recurrent-actions">
+                        <button class="btn-secondary delete-recurrent" data-index="${index}">Eliminar</button>
+                        <button class="btn-secondary edit-recurrent" data-index="${index}">Editar</button>
+                        <button class="btn-info add-recurrent-to-month" data-index="${index}">Agregar este mes</button>
+                    </td>
+                `;
+                recurrentTable.appendChild(row);
+            });
+
+            // Event listeners para botones
+            document.querySelectorAll('.delete-recurrent').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteRecurrentExpense(index);
+                });
+            });
+
+            document.querySelectorAll('.edit-recurrent').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    editRecurrentExpense(index);
+                });
+            });
+
+            document.querySelectorAll('.add-recurrent-to-month').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    addSingleRecurrentToCurrentMonth(index);
+                });
+            });
+        }
+
+        function addExpense() {
+            const date = document.getElementById('expense-date').value;
+            const categoryId = parseInt(document.getElementById('expense-category').value);
+            const description = document.getElementById('expense-description').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const isRecurrent = document.getElementById('expense-recurrent').checked;
+
+            if (!expenses[currentMonthYear]) {
+                expenses[currentMonthYear] = [];
+            }
+
+            const newExpense = {
+                date,
+                categoryId,
+                description,
+                amount,
+                recurrent: isRecurrent
+            };
+
+            expenses[currentMonthYear].push(newExpense);
+
+            // Si es recurrente, agregar a la lista de recurrentes (si no existe)
+            if (isRecurrent) {
+                const exists = recurrentExpenses.some(exp => 
+                    exp.categoryId === categoryId && 
+                    exp.description === description && 
+                    exp.amount === amount
+                );
+
+                if (!exists) {
+                    recurrentExpenses.push({
+                        categoryId,
+                        description,
+                        amount
+                    });
+                    saveRecurrentExpenses();
+                }
+            }
+
+            saveExpenses();
+            loadExpenses();
+            loadRecurrentExpenses();
+            updateTotals();
+            updateBudgetProgress();
+
+            // Limpiar formulario
+            document.getElementById('expense-form').reset();
+            document.getElementById('expense-date').valueAsDate = new Date();
+            document.getElementById('expense-recurrent').checked = false;
+        }
+
+        function addIncome() {
+            const date = document.getElementById('income-date').value;
+            const source = document.getElementById('income-source').value;
+            const description = document.getElementById('income-description').value;
+            const amount = parseFloat(document.getElementById('income-amount').value);
+
+            if (!income[currentMonthYear]) {
+                income[currentMonthYear] = [];
+            }
+
+            income[currentMonthYear].push({
+                date,
+                source,
+                description,
+                amount
+            });
+
+            saveIncome();
+            loadIncome();
+            updateTotals();
+
+            // Limpiar formulario
+            document.getElementById('income-form').reset();
+            document.getElementById('income-date').valueAsDate = new Date();
+        }
+
+        function addSavings() {
+            const date = document.getElementById('savings-date').value;
+            const jarId = parseInt(document.getElementById('savings-jar').value);
+            const amount = parseFloat(document.getElementById('savings-amount').value);
+            const description = document.getElementById('savings-description').value;
+
+            if (!savings[currentMonthYear]) {
+                savings[currentMonthYear] = [];
+            }
+
+            savings[currentMonthYear].push({
+                date,
+                jarId,
+                amount,
+                description
+            });
+
+            saveSavings();
+            loadSavings();
+            updateTotals();
+            updateSavingsTotal();
+
+            // Limpiar formulario
+            document.getElementById('savings-form').reset();
+            document.getElementById('savings-date').valueAsDate = new Date();
+        }
+
+        function addSavingsJar() {
+            const name = document.getElementById('jar-name').value.trim();
+            const target = document.getElementById('jar-target').value ? parseFloat(document.getElementById('jar-target').value) : null;
+            const description = document.getElementById('jar-description').value;
+
+            if (!name) return;
+
+            const newJar = {
+                id: nextJarId++,
+                name,
+                target,
+                description
+            };
+
+            savingsJars.push(newJar);
+            saveSavingsJars();
+            loadSavingsJars();
+            updateSavingsTotal();
+
+            // Limpiar formulario
+            document.getElementById('savings-jar-form').reset();
+        }
+
+        function deleteExpense(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar este gasto?')) {
+                expenses[currentMonthYear].splice(index, 1);
+                saveExpenses();
+                loadExpenses();
+                updateTotals();
+                updateBudgetProgress();
+            }
+        }
+
+        function editExpense(index) {
+            const expense = expenses[currentMonthYear][index];
+
+            // Llenar el formulario con los datos del gasto
+            document.getElementById('expense-date').value = expense.date;
+            document.getElementById('expense-category').value = expense.categoryId;
+            document.getElementById('expense-description').value = expense.description;
+            document.getElementById('expense-amount').value = expense.amount;
+            document.getElementById('expense-recurrent').checked = expense.recurrent;
+
+            // Cambiar el botón a modo edición
+            const submitButton = document.getElementById('expense-submit-btn');
+            submitButton.textContent = 'Actualizar Gasto';
+            submitButton.classList.add('edit-mode');
+
+            // Eliminar el gasto original al guardar
+            expenses[currentMonthYear].splice(index, 1);
+        }
+
+        function deleteIncome(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar este ingreso?')) {
+                income[currentMonthYear].splice(index, 1);
+                saveIncome();
+                loadIncome();
+                updateTotals();
+            }
+        }
+
+        function editIncome(index) {
+            const incomeItem = income[currentMonthYear][index];
+
+            // Llenar el formulario con los datos del ingreso
+            document.getElementById('income-date').value = incomeItem.date;
+            document.getElementById('income-source').value = incomeItem.source;
+            document.getElementById('income-description').value = incomeItem.description || '';
+            document.getElementById('income-amount').value = incomeItem.amount;
+
+            // Eliminar el ingreso original
+            income[currentMonthYear].splice(index, 1);
+            saveIncome();
+            loadIncome();
+            updateTotals();
+        }
+
+        function deleteRecurrentExpense(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar este gasto recurrente?')) {
+                recurrentExpenses.splice(index, 1);
+                saveRecurrentExpenses();
+                loadRecurrentExpenses();
+            }
+        }
+
+        function editRecurrentExpense(index) {
+            const expense = recurrentExpenses[index];
+
+            // Llenar el formulario con los datos del gasto recurrente
+            document.getElementById('expense-date').valueAsDate = new Date();
+            document.getElementById('expense-category').value = expense.categoryId;
+            document.getElementById('expense-description').value = expense.description;
+            document.getElementById('expense-amount').value = expense.amount;
+            document.getElementById('expense-recurrent').checked = true;
+
+            // Cambiar a la pestaña de gastos
+            document.querySelector('[data-subtab="expenses"]').click();
+
+            // Configurar el formulario para edición
+            const submitButton = document.getElementById('expense-submit-btn');
+            submitButton.textContent = 'Actualizar Recurrente';
+            submitButton.classList.add('edit-mode');
+
+            // Guardar el índice que estamos editando
+            currentEditingRecurrentIndex = index;
+            isEditingRecurrent = true;
+        }
+
+        function deleteSavingsJar(jarId) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta alcancía? Todos los ahorros asociados se perderán.')) {
+                // Eliminar la alcancía
+                savingsJars = savingsJars.filter(jar => jar.id !== jarId);
+
+                // Eliminar todos los ahorros asociados a esta alcancía
+                for (const month in savings) {
+                    savings[month] = savings[month].filter(saving => saving.jarId !== jarId);
+                }
+
+                saveSavingsJars();
+                saveSavings();
+                loadSavingsJars();
+                updateSavingsTotal();
+            }
+        }
+
+        function editSavingsJar(jarId) {
+            const jar = savingsJars.find(j => j.id === jarId);
+
+            // Llenar el formulario con los datos de la alcancía
+            document.getElementById('jar-name').value = jar.name;
+            document.getElementById('jar-target').value = jar.target || '';
+            document.getElementById('jar-description').value = jar.description || '';
+
+            // Eliminar la alcancía original
+            savingsJars = savingsJars.filter(j => j.id !== jarId);
+            saveSavingsJars();
+        }
+
+        function withdrawFromJar(jarId) {
+            const jar = savingsJars.find(j => j.id === jarId);
+            const savedAmount = calculateJarSavings(jarId);
+
+            if (savedAmount <= 0) {
+                alert('Esta alcancía no tiene fondos para retirar');
+                return;
+            }
+
+            const amount = parseFloat(prompt(`¿Cuánto deseas retirar de ${jar.name}? (Máximo: $${savedAmount.toFixed(2)})`, savedAmount.toFixed(2)));
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('Monto inválido');
+                return;
+            }
+
+            if (amount > savedAmount) {
+                alert('No puedes retirar más de lo que tienes ahorrado');
+                return;
+            }
+
+            // Registrar como un ingreso
+            if (!income[currentMonthYear]) {
+                income[currentMonthYear] = [];
+            }
+
+            income[currentMonthYear].push({
+                date: new Date().toISOString().slice(0, 10),
+                source: 'Retiro de ahorros',
+                description: `Retiro de ${jar.name}`,
+                amount: amount
+            });
+
+            // Registrar como un gasto negativo en ahorros (para mantener el historial)
+            if (!savings[currentMonthYear]) {
+                savings[currentMonthYear] = [];
+            }
+
+            savings[currentMonthYear].push({
+                date: new Date().toISOString().slice(0, 10),
+                jarId: jar.id,
+                amount: -amount,
+                description: 'Retiro de fondos'
+            });
+
+            saveIncome();
+            saveSavings();
+            loadIncome();
+            loadSavings();
+            updateTotals();
+            updateSavingsTotal();
+
+            showNotification(`Se retiraron $${amount.toFixed(2)} de ${jar.name}`, 'success');
+        }
+
+        function updateRecurrentExpense() {
+            const categoryId = parseInt(document.getElementById('expense-category').value);
+            const description = document.getElementById('expense-description').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+
+            // Actualizar el gasto recurrente
+            recurrentExpenses[currentEditingRecurrentIndex] = {
+                categoryId,
+                description,
+                amount
+            };
+
+            saveRecurrentExpenses();
+            loadRecurrentExpenses();
+
+            // Restaurar el formulario
+            resetExpenseForm();
+
+            showNotification('Gasto recurrente actualizado correctamente', 'success');
+        }
+
+        function resetExpenseForm() {
+            document.getElementById('expense-form').reset();
+            document.getElementById('expense-date').valueAsDate = new Date();
+            document.getElementById('expense-recurrent').checked = false;
+
+            const submitButton = document.getElementById('expense-submit-btn');
+            submitButton.textContent = 'Agregar Gasto';
+            submitButton.classList.remove('edit-mode');
+
+            currentEditingRecurrentIndex = null;
+            isEditingRecurrent = false;
+        }
+
+        function addSingleRecurrentToCurrentMonth(index) {
+            const recurrentExpense = recurrentExpenses[index];
+            const today = new Date().toISOString().slice(0, 10);
+
+            if (!expenses[currentMonthYear]) {
+                expenses[currentMonthYear] = [];
+            }
+
+            expenses[currentMonthYear].push({
+                date: today,
+                categoryId: recurrentExpense.categoryId,
+                description: recurrentExpense.description,
+                amount: recurrentExpense.amount,
+                recurrent: false // No marcamos como recurrente para no duplicar
+            });
+
+            saveExpenses();
+            loadExpenses();
+            updateTotals();
+            updateBudgetProgress();
+
+            showNotification('Gasto recurrente agregado al mes actual', 'success');
+        }
+
+        function copyRecurrentExpensesToCurrentMonth() {
+            if (recurrentExpenses.length === 0) {
+                alert('No tienes gastos recurrentes registrados');
+                return;
+            }
+
+            if (!confirm(`¿Agregar ${recurrentExpenses.length} gastos recurrentes al mes actual?`)) {
+                return;
+            }
+
+            const today = new Date().toISOString().slice(0, 10);
+
+            if (!expenses[currentMonthYear]) {
+                expenses[currentMonthYear] = [];
+            }
+
+            recurrentExpenses.forEach(expense => {
+                expenses[currentMonthYear].push({
+                    date: today,
+                    categoryId: expense.categoryId,
+                    description: expense.description,
+                    amount: expense.amount,
+                    recurrent: false // No marcamos como recurrente para no duplicar
+                });
+            });
+
+            saveExpenses();
+            loadExpenses();
+            updateTotals();
+            updateBudgetProgress();
+
+            showNotification(`${recurrentExpenses.length} gastos recurrentes agregados al mes actual`, 'success');
+        }
+
+        function addRecurrentToNextMonth() {
+            if (recurrentExpenses.length === 0) {
+                alert('No tienes gastos recurrentes registrados');
+                return;
+            }
+
+            // Obtener el próximo mes
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            const nextMonthYear = nextMonth.toISOString().slice(0, 7);
+            const firstDayNextMonth = nextMonthYear + '-01';
+
+            if (!expenses[nextMonthYear]) {
+                expenses[nextMonthYear] = [];
+            }
+
+            recurrentExpenses.forEach(expense => {
+                expenses[nextMonthYear].push({
+                    date: firstDayNextMonth,
+                    categoryId: expense.categoryId,
+                    description: expense.description,
+                    amount: expense.amount,
+                    recurrent: false // No marcamos como recurrente para no duplicar
+                });
+            });
+
+            saveExpenses();
+
+            showNotification(`${recurrentExpenses.length} gastos recurrentes programados para el próximo mes`, 'success');
+        }
+
+        function addCategory() {
+            const name = document.getElementById('category-name').value.trim();
+            const color = document.getElementById('category-color').value;
+            const budgetInput = document.getElementById('category-budget');
+            const budget = budgetInput.value ? parseFloat(budgetInput.value) : null;
+
+            if (!name) return;
+
+            const newCategory = {
+                id: nextCategoryId++,
+                name,
+                color,
+                budget
+            };
+
+            categories.push(newCategory);
+            saveCategories();
+            loadCategories();
+
+            // Limpiar formulario
+            document.getElementById('category-form').reset();
+            document.getElementById('category-color').value = '#3498db';
+        }
+
+        function deleteCategory(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta categoría? Los gastos asociados no se eliminarán, pero perderán la categoría.')) {
+                // Verificar si hay gastos con esta categoría
+                let hasExpenses = false;
+                for (const month in expenses) {
+                    if (expenses[month].some(exp => exp.categoryId === id)) {
+                        hasExpenses = true;
+                        break;
+                    }
+                }
+
+                // Verificar si hay gastos recurrentes con esta categoría
+                const hasRecurrent = recurrentExpenses.some(exp => exp.categoryId === id);
+
+                if (hasExpenses || hasRecurrent) {
+                    if (!confirm('Hay gastos asociados a esta categoría. Si la eliminas, esos gastos quedarán sin categoría. ¿Continuar?')) {
+                        return;
+                    }
+                }
+
+                categories = categories.filter(c => c.id !== id);
+                saveCategories();
+                loadCategories();
+                loadExpenses();
+                loadRecurrentExpenses();
+                updateBudgetProgress();
+            }
+        }
+
+        function updateTotals() {
+            let totalExpenses = 0;
+            let totalIncome = 0;
+            let totalSavings = 0;
+
+            if (expenses[currentMonthYear]) {
+                totalExpenses = expenses[currentMonthYear].reduce((sum, expense) => sum + expense.amount, 0);
+            }
+
+            if (income[currentMonthYear]) {
+                totalIncome = income[currentMonthYear].reduce((sum, incomeItem) => sum + incomeItem.amount, 0);
+            }
+
+            if (savings[currentMonthYear]) {
+                totalSavings = savings[currentMonthYear].reduce((sum, saving) => sum + saving.amount, 0);
+            }
+
+            const balance = totalIncome - totalExpenses - totalSavings;
+
+            document.getElementById('total-expenses').textContent = `Total gastado este mes: $${totalExpenses.toFixed(2)}`;
+            document.getElementById('total-income').textContent = `Total ingresos este mes: $${totalIncome.toFixed(2)}`;
+            document.getElementById('total-savings').textContent = `Total ahorrado este mes: $${totalSavings.toFixed(2)}`;
+            document.getElementById('total-balance').textContent = `Balance mensual: $${balance.toFixed(2)}`;
+
+            // Cambiar color del balance según sea positivo o negativo
+            const balanceElement = document.getElementById('total-balance');
+            if (balance < 0) {
+                balanceElement.style.backgroundColor = '#e74c3c';
+            } else {
+                balanceElement.style.backgroundColor = '#2ecc71';
+            }
+        }
+
+        function generateReport() {
+            const month = document.getElementById('report-month').value;
+            if (!month) return;
+
+            const monthExpenses = expenses[month] || [];
+            const monthIncome = income[month] || [];
+            const monthSavings = savings[month] || [];
+
+            // Agrupar gastos por categoría
+            const expensesByCategory = {};
+            monthExpenses.forEach(expense => {
+                const category = categories.find(c => c.id === expense.categoryId);
+                const categoryName = category ? category.name : 'Sin categoría';
+
+                if (!expensesByCategory[categoryName]) {
+                    expensesByCategory[categoryName] = 0;
+                }
+                expensesByCategory[categoryName] += expense.amount;
+            });
+
+            // Agrupar ingresos por fuente
+            const incomeBySource = {};
+            monthIncome.forEach(incomeItem => {
+                const source = incomeItem.source;
+
+                if (!incomeBySource[source]) {
+                    incomeBySource[source] = 0;
+                }
+                incomeBySource[source] += incomeItem.amount;
+            });
+
+            // Agrupar ahorros por alcancía
+            const savingsByJar = {};
+            monthSavings.forEach(saving => {
+                const jar = savingsJars.find(j => j.id === saving.jarId);
+                const jarName = jar ? jar.name : 'Alcancía eliminada';
+
+                if (!savingsByJar[jarName]) {
+                    savingsByJar[jarName] = 0;
+                }
+                savingsByJar[jarName] += saving.amount;
+            });
+
+            // Preparar datos para las gráficas
+            const expenseLabels = Object.keys(expensesByCategory);
+            const expenseData = Object.values(expensesByCategory);
+            const expenseColors = expenseLabels.map(label => {
+                const category = categories.find(c => c.name === label);
+                return category ? category.color : '#95a5a6';
+            });
+
+            const incomeLabels = Object.keys(incomeBySource);
+            const incomeData = Object.values(incomeBySource);
+
+            const savingsLabels = Object.keys(savingsByJar);
+            const savingsData = Object.values(savingsByJar);
+
+            // Crear gráfica de gastos
+            const expenseCtx = document.getElementById('expenses-chart').getContext('2d');
+
+            // Destruir gráficas anteriores si existen
+            if (expensesChart) {
+                expensesChart.destroy();
+            }
+            if (incomeVsExpensesChart) {
+                incomeVsExpensesChart.destroy();
+            }
+            if (savingsChart) {
+                savingsChart.destroy();
+            }
+
+            expensesChart = new Chart(expenseCtx, {
+                type: 'pie',
+                data: {
+                    labels: expenseLabels,
+                    datasets: [{
+                        data: expenseData,
+                        backgroundColor: expenseColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: `Distribución de gastos - ${month}`
+                        }
+                    }
+                }
+            });
+
+            // Crear gráfica de ingresos vs gastos
+            const incomeVsExpensesCtx = document.getElementById('income-vs-expenses-chart').getContext('2d');
+
+            incomeVsExpensesChart = new Chart(incomeVsExpensesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Ingresos', 'Gastos', 'Ahorros'],
+                    datasets: [{
+                        label: 'Total',
+                        data: [
+                            incomeData.reduce((sum, amount) => sum + amount, 0),
+                            expenseData.reduce((sum, amount) => sum + amount, 0),
+                            savingsData.reduce((sum, amount) => sum + amount, 0)
+                        ],
+                        backgroundColor: [
+                            '#2ecc71',
+                            '#e74c3c',
+                            '#1abc9c'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: `Ingresos vs Gastos vs Ahorros - ${month}`
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Crear gráfica de ahorros
+            const savingsCtx = document.getElementById('savings-chart').getContext('2d');
+
+            savingsChart = new Chart(savingsCtx, {
+                type: 'pie',
+                data: {
+                    labels: savingsLabels,
+                    datasets: [{
+                        data: savingsData,
+                        backgroundColor: [
+                            '#1abc9c',
+                            '#3498db',
+                            '#9b59b6',
+                            '#f1c40f',
+                            '#e74c3c',
+                            '#2ecc71'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: `Distribución de ahorros - ${month}`
+                        }
+                    }
+                }
+            });
+
+            // Comparación con meses anteriores
+            const months = Object.keys(expenses).sort();
+            const currentIndex = months.indexOf(month);
+
+            if (currentIndex > 0) {
+                const prevMonth = months[currentIndex - 1];
+                const prevExpenses = expenses[prevMonth].reduce((sum, exp) => sum + exp.amount, 0);
+                const currentExpenses = monthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+                const difference = currentExpenses - prevExpenses;
+                const percentage = (difference / prevExpenses) * 100;
+
+                let comparisonText = `Comparación con ${prevMonth}: `;
+                if (difference > 0) {
+                    comparisonText += `Gastaste $${difference.toFixed(2)} más (${percentage.toFixed(2)}% aumento)`;
+                } else if (difference < 0) {
+                    comparisonText += `Gastaste $${Math.abs(difference).toFixed(2)} menos (${Math.abs(percentage).toFixed(2)}% reducción)`;
+                } else {
+                    comparisonText += `Gastaste lo mismo que el mes anterior`;
+                }
+
+                document.getElementById('monthly-comparison').textContent = comparisonText;
+            } else {
+                document.getElementById('monthly-comparison').textContent = 'No hay datos del mes anterior para comparar';
+            }
+        }
+
+        // Funciones de respaldo
+        function exportData() {
+            const data = {
+                expenses: JSON.parse(localStorage.getItem('expenses')) || {},
+                income: JSON.parse(localStorage.getItem('income')) || {},
+                savings: JSON.parse(localStorage.getItem('savings')) || {},
+                savingsJars: JSON.parse(localStorage.getItem('savingsJars')) || [],
+                recurrentExpenses: JSON.parse(localStorage.getItem('recurrentExpenses')) || [],
+                categories: JSON.parse(localStorage.getItem('categories')) || [],
+                metadata: {
+                    exportedAt: new Date().toISOString(),
+                    appVersion: '1.3'
+                }
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup-finanzas-${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Mostrar mensaje de éxito
+            const successMsg = document.getElementById('export-success');
+            successMsg.classList.remove('hidden');
+            setTimeout(() => successMsg.classList.add('hidden'), 3000);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    const statusElement = document.getElementById('import-status');
+
+                    // Validar estructura básica del archivo
+                    if (!data.expenses || !data.categories || !data.income || !data.recurrentExpenses || !data.savings || !data.savingsJars) {
+                        statusElement.textContent = 'Error: El archivo no tiene el formato correcto.';
+                        statusElement.style.color = 'red';
+                        statusElement.classList.remove('hidden');
+                        return;
+                    }
+
+                    if (confirm(`¿Estás seguro de que quieres importar estos datos?\n\n- ${Object.keys(data.expenses).length} meses de gastos\n- ${Object.keys(data.income).length} meses de ingresos\n- ${Object.keys(data.savings).length} meses de ahorros\n- ${data.recurrentExpenses.length} gastos recurrentes\n- ${data.savingsJars.length} alcancías\n- ${data.categories.length} categorías\n\nEsto sobrescribirá tus datos actuales.`)) {
+                        localStorage.setItem('expenses', JSON.stringify(data.expenses));
+                        localStorage.setItem('income', JSON.stringify(data.income));
+                        localStorage.setItem('savings', JSON.stringify(data.savings));
+                        localStorage.setItem('savingsJars', JSON.stringify(data.savingsJars));
+                        localStorage.setItem('recurrentExpenses', JSON.stringify(data.recurrentExpenses));
+                        localStorage.setItem('categories', JSON.stringify(data.categories));
+
+                        // Recargar datos en la aplicación
+                        expenses = data.expenses;
+                        income = data.income;
+                        savings = data.savings;
+                        savingsJars = data.savingsJars;
+                        recurrentExpenses = data.recurrentExpenses;
+                        categories = data.categories;
+                        nextCategoryId = categories.length > 0 ? Math.max(...categories.map(c => c.id)) + 1 : 1;
+                        nextJarId = savingsJars.length > 0 ? Math.max(...savingsJars.map(j => j.id)) + 1 : 1;
+
+                        loadCategories();
+                        loadExpenses();
+                        loadIncome();
+                        loadSavings();
+                        loadSavingsJars();
+                        loadRecurrentExpenses();
+                        updateTotals();
+                        updateBudgetProgress();
+                        updateSavingsTotal();
+
+                        statusElement.textContent = '¡Datos importados correctamente!';
+                        statusElement.style.color = 'green';
+                        statusElement.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    document.getElementById('import-status').textContent = 'Error al leer el archivo: ' + error.message;
+                    document.getElementById('import-status').style.color = 'red';
+                    document.getElementById('import-status').classList.remove('hidden');
+                }
+            };
+            reader.onerror = function() {
+                document.getElementById('import-status').textContent = 'Error al leer el archivo';
+                document.getElementById('import-status').style.color = 'red';
+                document.getElementById('import-status').classList.remove('hidden');
+            };
+            reader.readAsText(file);
+
+            // Resetear el input para permitir importar el mismo archivo otra vez
+            event.target.value = '';
+        }
+
+        function resetData() {
+            if (confirm('¿ESTÁS SEGURO DE QUE QUIERES BORRAR TODOS LOS DATOS?\n\nEsta acción no se puede deshacer y perderás todos tus registros.')) {
+                localStorage.removeItem('expenses');
+                localStorage.removeItem('income');
+                localStorage.removeItem('savings');
+                localStorage.removeItem('savingsJars');
+                localStorage.removeItem('recurrentExpenses');
+                localStorage.removeItem('categories');
+
+                // Resetear variables
+                expenses = {};
+                income = {};
+                savings = {};
+                savingsJars = [];
+                recurrentExpenses = [];
+                categories = [
+                    { id: 1, name: 'Comida', color: '#e74c3c', budget: 3000 },
+                    { id: 2, name: 'Transporte', color: '#3498db', budget: 1500 },
+                    { id: 3, name: 'Entretenimiento', color: '#9b59b6', budget: 1000 },
+                    { id: 4, name: 'Servicios', color: '#2ecc71', budget: 2500 }
+                ];
+                nextCategoryId = 5;
+                nextJarId = 1;
+
+                // Recargar la aplicación
+                loadCategories();
+                loadExpenses();
+                loadIncome();
+                loadSavings();
+                loadSavingsJars();
+                loadRecurrentExpenses();
+                updateTotals();
+                updateBudgetProgress();
+                updateSavingsTotal();
+
+                alert('Todos los datos han sido borrados. La aplicación se ha reiniciado con categorías predeterminadas.');
+            }
+        }
+
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+
+        function saveIncome() {
+            localStorage.setItem('income', JSON.stringify(income));
+        }
+
+        function saveSavings() {
+            localStorage.setItem('savings', JSON.stringify(savings));
+        }
+
+        function saveSavingsJars() {
+            localStorage.setItem('savingsJars', JSON.stringify(savingsJars));
+        }
+
+        function saveRecurrentExpenses() {
+            localStorage.setItem('recurrentExpenses', JSON.stringify(recurrentExpenses));
+        }
+
+        function saveCategories() {
+            localStorage.setItem('categories', JSON.stringify(categories));
+        }
+    </script>
+</body>
+</html>
